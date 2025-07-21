@@ -28,7 +28,7 @@ require("lazy").setup({
   build = ':TSUpdate',
   config = function()
     require('nvim-treesitter.configs').setup {
-      ensure_installed = { 'go' },
+      ensure_installed = { 'go', "yaml" },
       highlight = { enable = true },
     }
   end},
@@ -47,6 +47,22 @@ require("lazy").setup({
     priority = 1000,
     opts = {},
   },
+  {
+  "cuducos/yaml.nvim",
+  ft = { "yaml" }, -- optional
+  dependencies = {
+    "nvim-treesitter/nvim-treesitter",
+    "folke/snacks.nvim", -- optional
+    "nvim-telescope/telescope.nvim", -- optional
+    "ibhagwan/fzf-lua" -- optional
+  },
+},
+{
+  "lukas-reineke/indent-blankline.nvim",
+  main = "ibl",
+  ft = { "yaml", "python" },
+  opts = {}
+},
 })
 
 -- general options
@@ -103,6 +119,7 @@ vim.keymap.set("n", "<leader>fd", "<cmd>Telescope file_browser<cr>", { desc = "F
 vim.keymap.set('n', '<leader>o', ':Telescope lsp_document_symbols<CR>', { noremap = true, silent = true })
 vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, { desc = 'LSP Code Action' })
 
+vim.keymap.set("n", "<leader>k", vim.lsp.buf.signature_help, { desc = "LSP Signature Help" })
 
 -- Set Go tab behavior to use tabs (not spaces), width 8 (per gofmt)
 vim.api.nvim_create_autocmd("FileType", {
@@ -121,10 +138,8 @@ vim.api.nvim_create_autocmd("FileType", {
  vim.cmd.colorscheme("tokyonight")
 
 require("nvim-treesitter.configs").setup({
-  ensure_installed = { "go", "lua", "vim", "bash", "markdown" }, -- add more as needed
-  highlight = {
-    enable = true,
-  },
+  ensure_installed = { "go", "lua", "vim", "bash", "markdown", "yaml" }, -- add more as needed
+  highlight = { enable = true },
 })
 
 vim.keymap.set('i', '<A-Left>', '<C-o>b', { noremap = true })  -- Option + ←
@@ -150,4 +165,8 @@ vim.keymap.set("i", "<S-Tab>", "<C-d>", { noremap = true })
 vim.keymap.set("n", "<S-Tab>", "<<", { noremap = true, silent = true })
 vim.keymap.set("v", "<S-Tab>", "<gv", { noremap = true, silent = true })
 
+-- git
+vim.keymap.set("n", "<leader>gs", require("telescope.builtin").git_status, { desc="Telescope Git Status"})
 
+-- auto-indent
+require("ibl").setup()
