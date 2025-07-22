@@ -63,6 +63,15 @@ require("lazy").setup({
   ft = { "yaml", "python" },
   opts = {}
 },
+{
+    'MeanderingProgrammer/render-markdown.nvim',
+    dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.nvim' }, -- if you use the mini.nvim suite
+    -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.icons' }, -- if you use standalone mini plugins
+    -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
+    ---@module 'render-markdown'
+    ---@type render.md.UserConfig
+    opts = {},
+},
 })
 
 -- general options
@@ -168,5 +177,14 @@ vim.keymap.set("v", "<S-Tab>", "<gv", { noremap = true, silent = true })
 -- git
 vim.keymap.set("n", "<leader>gs", require("telescope.builtin").git_status, { desc="Telescope Git Status"})
 
--- auto-indent
-require("ibl").setup()
+-- test go yaml files
+vim.api.nvim_create_user_command('GoYamlTest', function()
+  local filename = vim.fn.expand('%:t')
+  vim.cmd('!go test -v ./internal/functional_test -run "^TestApi$/^' .. filename .. '$"')
+end, {})
+
+-- display error better
+vim.keymap.set("n", "<leader>e",
+  function() vim.diagnostic.open_float(nil, {border="rounded",focus=false}) end,
+  {desc="LSP: show diagnostic under cursor"})
+
