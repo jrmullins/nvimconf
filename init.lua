@@ -5,39 +5,46 @@ if not vim.loop.fs_stat(lazypath) then
     "git", "clone", "--filter=blob:none",
     "https://github.com/folke/lazy.nvim.git",
     lazypath,
-    })
+  })
 end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
-  { "ray-x/go.nvim", dependencies = { "ray-x/guihua.lua", "nvim-treesitter/nvim-treesitter", "neovim/nvim-lspconfig" } },
+  { "ray-x/go.nvim",          dependencies = { "ray-x/guihua.lua", "nvim-treesitter/nvim-treesitter", "neovim/nvim-lspconfig" } },
   "nvim-lua/plenary.nvim",
   "hrsh7th/nvim-cmp",
-  {"nvim-telescope/telescope.nvim",
+  {
+    "nvim-telescope/telescope.nvim",
     dependencies = { "nvim-lua/plenary.nvim" },
     config = function()
-        require("telescope").setup()
-    end},
+      require("telescope").setup()
+    end
+  },
   "nvim-telescope/telescope-file-browser.nvim",
   "hrsh7th/cmp-nvim-lsp",
   "L3MON4D3/LuaSnip",
   "saadparwaiz1/cmp_luasnip",
   { "Pocco81/auto-save.nvim", config = true },
-  {"Mofiqul/dracula.nvim", name = "dracula",priority = -1},
-  {'nvim-treesitter/nvim-treesitter',
-  build = ':TSUpdate',
-  config = function()
-    require('nvim-treesitter.configs').setup {
-      ensure_installed = { 'go', "yaml" },
-      highlight = { enable = true },
-    }
-  end},
-  { 'lewis6991/gitsigns.nvim',
+  { "Mofiqul/dracula.nvim",   name = "dracula",                                                                                 priority = -1 },
+  {
+    'nvim-treesitter/nvim-treesitter',
+    build = ':TSUpdate',
+    config = function()
+      require('nvim-treesitter.configs').setup {
+        ensure_installed = { 'go', "yaml" },
+        highlight = { enable = true },
+      }
+    end
+  },
+  {
+    'lewis6991/gitsigns.nvim',
     config = function()
       require('gitsigns').setup()
-    end},
-  { "sindrets/diffview.nvim",
-    dependencies = { "nvim-lua/plenary.nvim"},
+    end
+  },
+  {
+    "sindrets/diffview.nvim",
+    dependencies = { "nvim-lua/plenary.nvim" },
     config = true
   },
   { 'marko-cerovac/material.nvim' },
@@ -48,22 +55,22 @@ require("lazy").setup({
     opts = {},
   },
   {
-  "cuducos/yaml.nvim",
-  ft = { "yaml" }, -- optional
-  dependencies = {
-    "nvim-treesitter/nvim-treesitter",
-    "folke/snacks.nvim", -- optional
-    "nvim-telescope/telescope.nvim", -- optional
-    "ibhagwan/fzf-lua" -- optional
+    "cuducos/yaml.nvim",
+    ft = { "yaml" }, -- optional
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+      "folke/snacks.nvim",           -- optional
+      "nvim-telescope/telescope.nvim", -- optional
+      "ibhagwan/fzf-lua"             -- optional
+    },
   },
-},
-{
-  "lukas-reineke/indent-blankline.nvim",
-  main = "ibl",
-  ft = { "yaml", "python" },
-  opts = {}
-},
-{
+  {
+    "lukas-reineke/indent-blankline.nvim",
+    main = "ibl",
+    ft = { "yaml", "python", "lua" },
+    opts = {}
+  },
+  {
     'MeanderingProgrammer/render-markdown.nvim',
     dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.nvim' }, -- if you use the mini.nvim suite
     -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.icons' }, -- if you use standalone mini plugins
@@ -71,16 +78,28 @@ require("lazy").setup({
     ---@module 'render-markdown'
     ---@type render.md.UserConfig
     opts = {},
-},
-{
-  "greggh/claude-code.nvim",
-  dependencies = {
-    "nvim-lua/plenary.nvim", -- Required for git operations
   },
-  config = function()
-    require("claude-code").setup()
-  end
-},
+  {
+    "greggh/claude-code.nvim",
+    dependencies = {
+      "nvim-lua/plenary.nvim", -- Required for git operations
+    },
+    config = function()
+      require("claude-code").setup({
+        window = {
+          position = "float",
+          float = {
+            width = "90%", -- Take up 90% of the editor width
+            height = "90%", -- Take up 90% of the editor height
+            row = "center", -- Center vertically
+            col = "center", -- Center horizontally
+            relative = "editor",
+            border = "double", -- Use double border style
+          },
+        },
+      })
+    end
+  },
 })
 
 -- general options
@@ -149,17 +168,17 @@ vim.keymap.set("n", "<leader>k", vim.lsp.buf.signature_help, { desc = "LSP Signa
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "go",
   callback = function()
-    vim.bo.expandtab = false  -- use tabs, not spaces
-    vim.bo.shiftwidth = 8     -- visual width of tab when shifting
-    vim.bo.tabstop = 8        -- width of actual tab character
-    vim.bo.softtabstop = 8    -- number of spaces inserted for a tab
+    vim.bo.expandtab = false -- use tabs, not spaces
+    vim.bo.shiftwidth = 8    -- visual width of tab when shifting
+    vim.bo.tabstop = 8       -- width of actual tab character
+    vim.bo.softtabstop = 8   -- number of spaces inserted for a tab
   end,
 })
 
 -- vim.cmd.colorscheme("dracula")
- vim.g.material_style = "Darker"
- --vim.cmd.colorscheme("material")
- vim.cmd.colorscheme("tokyonight")
+vim.g.material_style = "Darker"
+--vim.cmd.colorscheme("material")
+vim.cmd.colorscheme("tokyonight")
 
 require("nvim-treesitter.configs").setup({
   ensure_installed = { "go", "lua", "vim", "bash", "markdown", "yaml" }, -- add more as needed
@@ -190,7 +209,7 @@ vim.keymap.set("n", "<S-Tab>", "<<", { noremap = true, silent = true })
 vim.keymap.set("v", "<S-Tab>", "<gv", { noremap = true, silent = true })
 
 -- git
-vim.keymap.set("n", "<leader>gs", require("telescope.builtin").git_status, { desc="Telescope Git Status"})
+vim.keymap.set("n", "<leader>gs", require("telescope.builtin").git_status, { desc = "Telescope Git Status" })
 
 -- test go yaml files
 vim.api.nvim_create_user_command('GoYamlTest', function()
@@ -200,8 +219,8 @@ end, {})
 
 -- display error better
 vim.keymap.set("n", "<leader>e",
-  function() vim.diagnostic.open_float(nil, {border="rounded",focus=false}) end,
-  {desc="LSP: show diagnostic under cursor"})
+  function() vim.diagnostic.open_float(nil, { border = "rounded", focus = false }) end,
+  { desc = "LSP: show diagnostic under cursor" })
 
 -- claude
 vim.keymap.set('n', '<leader>cc', '<cmd>ClaudeCode<CR>', { desc = 'Toggle Claude Code' })
