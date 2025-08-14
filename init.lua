@@ -24,8 +24,9 @@ require("lazy").setup({
   "hrsh7th/cmp-nvim-lsp",
   "L3MON4D3/LuaSnip",
   "saadparwaiz1/cmp_luasnip",
-  { "Pocco81/auto-save.nvim", config = true },
-  { "Mofiqul/dracula.nvim",   name = "dracula",                                                                                 priority = -1 },
+--  { "Pocco81/auto-save.nvim", config = true },
+  
+{ "Mofiqul/dracula.nvim",   name = "dracula",                                                                                 priority = -1 },
   {
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
@@ -100,6 +101,43 @@ require("lazy").setup({
       })
     end
   },
+  {
+  "nvim-tree/nvim-tree.lua",
+  lazy = false,
+  dependencies = { "nvim-tree/nvim-web-devicons" },
+  config = function()
+    require("nvim-tree").setup({
+      view = {
+        width = 30,
+        side = "left",
+        preserve_window_proportions = true,
+      },
+      filters = {
+        dotfiles = false, -- show or hide dotfiles
+      },
+      git = {
+        enable = true,
+      },
+      update_focused_file = {
+        enable = true,
+        update_cwd = true,
+      },
+      renderer = {
+        highlight_git = true,
+        icons = {
+          show = {
+            git = true,
+            folder = true,
+            file = true,
+            folder_arrow = true,
+          },
+        },
+      },
+    })
+
+  end,
+}
+
 })
 
 -- general options
@@ -224,3 +262,7 @@ vim.keymap.set("n", "<leader>e",
 
 -- claude
 vim.keymap.set('n', '<leader>cc', '<cmd>ClaudeCode<CR>', { desc = 'Toggle Claude Code' })
+
+-- file tree
+vim.keymap.set("n", "<leader>ft", ":NvimTreeToggle<CR>", { desc = "Toggle File Tree" })
+
