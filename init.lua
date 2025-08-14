@@ -120,7 +120,7 @@ require("lazy").setup({
       },
       update_focused_file = {
         enable = true,
-        update_cwd = true,
+        update_cwd = false,
       },
       renderer = {
         highlight_git = true,
