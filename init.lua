@@ -17,7 +17,11 @@ require("lazy").setup({
     "nvim-telescope/telescope.nvim",
     dependencies = { "nvim-lua/plenary.nvim" },
     config = function()
-      require("telescope").setup()
+      require("telescope").setup({
+        defaults = {
+            file_ignore_patterns = { "/gen/" },
+        }
+      })
     end
   },
   "nvim-telescope/telescope-file-browser.nvim",
