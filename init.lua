@@ -62,7 +62,7 @@ require("lazy").setup({
             "%.git/",
             "node_modules/",
             "venv/",
-            "/gen/",
+            "gen/",
           },
         },
       })
@@ -131,6 +131,55 @@ require("lazy").setup({
   },
 
   -- UI and Visual Enhancements
+  {
+    "nvim-lualine/lualine.nvim",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    config = function()
+      local function get_repo_name()
+        local handle = io.popen("git rev-parse --show-toplevel 2>/dev/null")
+        if handle then
+          local result = handle:read("*a")
+          handle:close()
+          if result and result ~= "" then
+            return vim.fn.fnamemodify(result:gsub("\n", ""), ":t")
+          end
+        end
+        return ""
+      end
+
+      require("lualine").setup({
+        options = {
+          theme = "auto",
+          component_separators = { left = "", right = "" },
+          section_separators = { left = "", right = "" },
+        },
+        sections = {
+          lualine_a = { "mode" },
+          lualine_b = { 
+            {
+              get_repo_name,
+              icon = "",
+            },
+            "branch", 
+            "diff", 
+            "diagnostics" 
+          },
+          lualine_c = { "filename" },
+          lualine_x = { "encoding", "fileformat", "filetype" },
+          lualine_y = { "progress" },
+          lualine_z = { "location" }
+        },
+        inactive_sections = {
+          lualine_a = {},
+          lualine_b = {},
+          lualine_c = { "filename" },
+          lualine_x = { "location" },
+          lualine_y = {},
+          lualine_z = {}
+        },
+      })
+    end,
+  },
   {
     "lukas-reineke/indent-blankline.nvim",
     main = "ibl",
