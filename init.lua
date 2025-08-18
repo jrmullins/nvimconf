@@ -29,6 +29,7 @@ require("lazy").setup({
             "%.git/",   -- ignore the entire .git folder
             "node_modules/", -- you can add more here
             "venv/",
+	        "/gen/",
             },
         },
       })
