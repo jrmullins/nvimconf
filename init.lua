@@ -1,4 +1,10 @@
--- bootstrap lazy.nvim
+-- ============================================================================
+-- NEOVIM CONFIGURATION
+-- ============================================================================
+
+-- ============================================================================
+-- LAZY.NVIM BOOTSTRAP
+-- ============================================================================
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system({
@@ -9,53 +15,113 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+-- ============================================================================
+-- PLUGIN SPECIFICATIONS
+-- ============================================================================
 require("lazy").setup({
-  { "ray-x/go.nvim",          dependencies = { "ray-x/guihua.lua", "nvim-treesitter/nvim-treesitter", "neovim/nvim-lspconfig" } },
-  "nvim-lua/plenary.nvim",
+  -- Language Support
+  {
+    "ray-x/go.nvim",
+    dependencies = {
+      "ray-x/guihua.lua",
+      "nvim-treesitter/nvim-treesitter",
+      "neovim/nvim-lspconfig"
+    }
+  },
+  {
+    "cuducos/yaml.nvim",
+    ft = { "yaml" },
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+      "folke/snacks.nvim",
+      "nvim-telescope/telescope.nvim",
+      "ibhagwan/fzf-lua"
+    },
+  },
+
+  -- Completion and Snippets
   "hrsh7th/nvim-cmp",
+  "hrsh7th/cmp-nvim-lsp",
+  "L3MON4D3/LuaSnip",
+  "saadparwaiz1/cmp_luasnip",
+
+  -- Telescope and File Management
   {
     "nvim-telescope/telescope.nvim",
     dependencies = { "nvim-lua/plenary.nvim" },
     config = function()
       require("telescope").setup({
         pickers = {
-            find_files = {
-                hidden = true,
-                no_ignore = true,
-            }
+          find_files = {
+            hidden = true,
+            no_ignore = true,
+          }
         },
         defaults = {
-            file_ignore_patterns = {
-            "%.git/",   -- ignore the entire .git folder
-            "node_modules/", -- you can add more here
+          file_ignore_patterns = {
+            "%.git/",
+            "node_modules/",
             "venv/",
-	        "/gen/",
-            },
+            "/gen/",
+          },
         },
       })
     end
   },
   "nvim-telescope/telescope-file-browser.nvim",
-  "hrsh7th/cmp-nvim-lsp",
-  "L3MON4D3/LuaSnip",
-  "saadparwaiz1/cmp_luasnip",
---  { "Pocco81/auto-save.nvim", config = true },
-  
-{ "Mofiqul/dracula.nvim",   name = "dracula",                                                                                 priority = -1 },
   {
-    'nvim-treesitter/nvim-treesitter',
-    build = ':TSUpdate',
+    "nvim-tree/nvim-tree.lua",
+    lazy = false,
+    dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
-      require('nvim-treesitter.configs').setup {
-        ensure_installed = { 'go', "yaml" },
+      require("nvim-tree").setup({
+        view = {
+          width = 30,
+          side = "left",
+          preserve_window_proportions = true,
+        },
+        filters = {
+          dotfiles = false,
+        },
+        git = {
+          enable = true,
+        },
+        update_focused_file = {
+          enable = true,
+          update_cwd = false,
+        },
+        renderer = {
+          highlight_git = true,
+          icons = {
+            show = {
+              git = true,
+              folder = true,
+              file = true,
+              folder_arrow = true,
+            },
+          },
+        },
+      })
+    end,
+  },
+
+  -- Treesitter
+  {
+    "nvim-treesitter/nvim-treesitter",
+    build = ":TSUpdate",
+    config = function()
+      require("nvim-treesitter.configs").setup({
+        ensure_installed = { "go", "lua", "vim", "bash", "markdown", "yaml" },
         highlight = { enable = true },
-      }
+      })
     end
   },
+
+  -- Git Integration
   {
-    'lewis6991/gitsigns.nvim',
+    "lewis6991/gitsigns.nvim",
     config = function()
-      require('gitsigns').setup()
+      require("gitsigns").setup()
     end
   },
   {
@@ -63,23 +129,8 @@ require("lazy").setup({
     dependencies = { "nvim-lua/plenary.nvim" },
     config = true
   },
-  { 'marko-cerovac/material.nvim' },
-  {
-    "folke/tokyonight.nvim",
-    lazy = false,
-    priority = 1000,
-    opts = {},
-  },
-  {
-    "cuducos/yaml.nvim",
-    ft = { "yaml" }, -- optional
-    dependencies = {
-      "nvim-treesitter/nvim-treesitter",
-      "folke/snacks.nvim",           -- optional
-      "nvim-telescope/telescope.nvim", -- optional
-      "ibhagwan/fzf-lua"             -- optional
-    },
-  },
+
+  -- UI and Visual Enhancements
   {
     "lukas-reineke/indent-blankline.nvim",
     main = "ibl",
@@ -87,96 +138,89 @@ require("lazy").setup({
     opts = {}
   },
   {
-    'MeanderingProgrammer/render-markdown.nvim',
-    dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.nvim' }, -- if you use the mini.nvim suite
-    -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.icons' }, -- if you use standalone mini plugins
-    -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
-    ---@module 'render-markdown'
-    ---@type render.md.UserConfig
+    "MeanderingProgrammer/render-markdown.nvim",
+    dependencies = { "nvim-treesitter/nvim-treesitter", "echasnovski/mini.nvim" },
     opts = {},
+  },
+
+  -- Color Schemes
+  {
+    "Mofiqul/dracula.nvim",
+    name = "dracula",
+    priority = -1
+  },
+  { "marko-cerovac/material.nvim" },
+  {
+    "folke/tokyonight.nvim",
+    lazy = false,
+    priority = 1000,
+    opts = {},
+  },
+
+  -- Utility Plugins
+  "nvim-lua/plenary.nvim",
+  {
+    "numToStr/Comment.nvim",
+    opts = {}
   },
   {
     "greggh/claude-code.nvim",
-    dependencies = {
-      "nvim-lua/plenary.nvim", -- Required for git operations
-    },
+    dependencies = { "nvim-lua/plenary.nvim" },
     config = function()
       require("claude-code").setup({
         window = {
           position = "float",
           float = {
-            width = "90%", -- Take up 90% of the editor width
-            height = "90%", -- Take up 90% of the editor height
-            row = "center", -- Center vertically
-            col = "center", -- Center horizontally
+            width = "90%",
+            height = "90%",
+            row = "center",
+            col = "center",
             relative = "editor",
-            border = "double", -- Use double border style
+            border = "double",
           },
         },
       })
     end
   },
-  {
-  "nvim-tree/nvim-tree.lua",
-  lazy = false,
-  dependencies = { "nvim-tree/nvim-web-devicons" },
-  config = function()
-    require("nvim-tree").setup({
-      view = {
-        width = 30,
-        side = "left",
-        preserve_window_proportions = true,
-      },
-      filters = {
-        dotfiles = false, -- show or hide dotfiles
-      },
-      git = {
-        enable = true,
-      },
-      update_focused_file = {
-        enable = true,
-        update_cwd = false,
-      },
-      renderer = {
-        highlight_git = true,
-        icons = {
-          show = {
-            git = true,
-            folder = true,
-            file = true,
-            folder_arrow = true,
-          },
-        },
-      },
-    })
-
-  end,
-},
-{
-    'numToStr/Comment.nvim',
-    opts = {
-        -- add any options here
-    }
-}
-
 })
 
--- general options
+-- ============================================================================
+-- GENERAL VIM OPTIONS
+-- ============================================================================
+vim.g.mapleader = " "
+
+-- Line numbers
 vim.o.number = true
 vim.o.relativenumber = true
+
+-- Indentation
 vim.o.tabstop = 4
 vim.o.shiftwidth = 4
 vim.o.expandtab = true
-vim.g.mapleader = " "
-
--- Indentation settings
-vim.cmd("filetype plugin indent on")
 vim.o.autoindent = true
 vim.o.smartindent = true
 vim.o.smarttab = true
 
--- Go plugin setup
+-- Enable filetype detection
+vim.cmd("filetype plugin indent on")
+
+-- ============================================================================
+-- LANGUAGE-SPECIFIC CONFIGURATION
+-- ============================================================================
+
+-- Go setup
 require("go").setup()
+
+-- Go file settings
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "go",
+  callback = function()
+    vim.bo.expandtab = false
+    vim.bo.shiftwidth = 8
+    vim.bo.tabstop = 8
+    vim.bo.softtabstop = 8
+  end,
+})
 
 -- Auto-run goimports on save
 vim.api.nvim_create_autocmd("BufWritePre", {
@@ -186,7 +230,9 @@ vim.api.nvim_create_autocmd("BufWritePre", {
   end,
 })
 
--- Autocomplete setup
+-- ============================================================================
+-- COMPLETION SETUP
+-- ============================================================================
 local cmp = require("cmp")
 cmp.setup({
   snippet = {
@@ -195,95 +241,92 @@ cmp.setup({
     end,
   },
   mapping = cmp.mapping.preset.insert({
-    ['<Tab>'] = cmp.mapping.confirm({ select = true }),
-    ['<C-Space>'] = cmp.mapping.complete(),
+    ["<Tab>"] = cmp.mapping.confirm({ select = true }),
+    ["<C-Space>"] = cmp.mapping.complete(),
   }),
   sources = {
-    { name = 'nvim_lsp' },
-    { name = 'luasnip' },
+    { name = "nvim_lsp" },
+    { name = "luasnip" },
   },
 })
 
--- LSP config
+-- ============================================================================
+-- LSP CONFIGURATION
+-- ============================================================================
 local lspconfig = require("lspconfig")
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
+
+-- Go LSP
 lspconfig.gopls.setup({
   capabilities = capabilities,
 })
 
--- Telescope keybinds
-vim.keymap.set("n", "<leader>ff", "<cmd>Telescope find_files<cr>")
-vim.keymap.set("n", "<leader>fg", "<cmd>Telescope live_grep<cr>")
-
-require("telescope").load_extension("file_browser")
-vim.keymap.set("n", "<leader>fd", "<cmd>Telescope file_browser<cr>", { desc = "File Browser" })
-
-vim.keymap.set('n', '<leader>o', ':Telescope lsp_document_symbols<CR>', { noremap = true, silent = true })
-vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, { desc = 'LSP Code Action' })
-
-vim.keymap.set("n", "<leader>k", vim.lsp.buf.signature_help, { desc = "LSP Signature Help" })
-
--- Set Go tab behavior to use tabs (not spaces), width 8 (per gofmt)
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = "go",
-  callback = function()
-    vim.bo.expandtab = false -- use tabs, not spaces
-    vim.bo.shiftwidth = 8    -- visual width of tab when shifting
-    vim.bo.tabstop = 8       -- width of actual tab character
-    vim.bo.softtabstop = 8   -- number of spaces inserted for a tab
-  end,
-})
-
--- vim.cmd.colorscheme("dracula")
-vim.g.material_style = "Darker"
---vim.cmd.colorscheme("material")
-vim.cmd.colorscheme("tokyonight")
-
-require("nvim-treesitter.configs").setup({
-  ensure_installed = { "go", "lua", "vim", "bash", "markdown", "yaml" }, -- add more as needed
-  highlight = { enable = true },
-})
-
-vim.keymap.set('i', '<A-Left>', '<C-o>b', { noremap = true })  -- Option + ←
-vim.keymap.set('i', '<A-Right>', '<C-o>w', { noremap = true }) -- Option + →
-
--- Automatically set LSP keymaps when a language server attaches
-vim.api.nvim_create_autocmd('LspAttach', {
+-- LSP keymaps (auto-attached when LSP server starts)
+vim.api.nvim_create_autocmd("LspAttach", {
   callback = function(ev)
     local opts = { buffer = ev.buf }
-
-    -- Standard Go-to commands
-    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
-    vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
-    vim.keymap.set('n', 'gI', vim.lsp.buf.implementation, opts)
-    vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
-    vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
-    vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, opts)
+    vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+    vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
+    vim.keymap.set("n", "gI", vim.lsp.buf.implementation, opts)
+    vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
+    vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+    vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
   end,
 })
 
--- shift tab
-vim.keymap.set("i", "<S-Tab>", "<C-d>", { noremap = true })
-vim.keymap.set("n", "<S-Tab>", "<<", { noremap = true, silent = true })
-vim.keymap.set("v", "<S-Tab>", "<gv", { noremap = true, silent = true })
+-- ============================================================================
+-- TELESCOPE SETUP
+-- ============================================================================
+require("telescope").load_extension("file_browser")
 
--- git
-vim.keymap.set("n", "<leader>gs", require("telescope.builtin").git_status, { desc = "Telescope Git Status" })
 
--- test go yaml files
-vim.api.nvim_create_user_command('GoYamlTest', function()
-  local filename = vim.fn.expand('%:t')
+-- ============================================================================
+-- COLORSCHEME
+-- ============================================================================
+vim.g.material_style = "Darker"
+vim.cmd.colorscheme("tokyonight")
+
+
+-- ============================================================================
+-- KEYMAPS
+-- ============================================================================
+
+-- Telescope
+vim.keymap.set("n", "<leader>ff", "<cmd>Telescope find_files<cr>", { desc = "Find Files" })
+vim.keymap.set("n", "<leader>fg", "<cmd>Telescope live_grep<cr>", { desc = "Live Grep" })
+vim.keymap.set("n", "<leader>fd", "<cmd>Telescope file_browser<cr>", { desc = "File Browser" })
+vim.keymap.set("n", "<leader>o", "<cmd>Telescope lsp_document_symbols<cr>", { desc = "Document Symbols" })
+vim.keymap.set("n", "<leader>gs", require("telescope.builtin").git_status, { desc = "Git Status" })
+
+-- LSP
+vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "Code Action" })
+vim.keymap.set("n", "<leader>k", vim.lsp.buf.signature_help, { desc = "Signature Help" })
+vim.keymap.set("n", "<leader>e", function()
+  vim.diagnostic.open_float(nil, { border = "rounded", focus = false })
+end, { desc = "Show Diagnostic" })
+
+-- File Tree
+vim.keymap.set("n", "<leader>ft", "<cmd>NvimTreeToggle<cr>", { desc = "Toggle File Tree" })
+
+-- Claude Code
+vim.keymap.set("n", "<leader>cc", "<cmd>ClaudeCode<cr>", { desc = "Toggle Claude Code" })
+
+-- Navigation in Insert Mode
+vim.keymap.set("i", "<A-Left>", "<C-o>b", { desc = "Move word backward" })
+vim.keymap.set("i", "<A-Right>", "<C-o>w", { desc = "Move word forward" })
+
+-- Shift Tab for Indentation
+vim.keymap.set("i", "<S-Tab>", "<C-d>", { desc = "Unindent" })
+vim.keymap.set("n", "<S-Tab>", "<<", { desc = "Unindent line" })
+vim.keymap.set("v", "<S-Tab>", "<gv", { desc = "Unindent selection" })
+
+-- ============================================================================
+-- CUSTOM COMMANDS
+-- ============================================================================
+
+-- Go YAML Test Command
+vim.api.nvim_create_user_command("GoYamlTest", function()
+  local filename = vim.fn.expand("%:t")
   vim.cmd('!go test -v ./internal/functional_test -run "^TestApi$/^' .. filename .. '$"')
-end, {})
-
--- display error better
-vim.keymap.set("n", "<leader>e",
-  function() vim.diagnostic.open_float(nil, { border = "rounded", focus = false }) end,
-  { desc = "LSP: show diagnostic under cursor" })
-
--- claude
-vim.keymap.set('n', '<leader>cc', '<cmd>ClaudeCode<CR>', { desc = 'Toggle Claude Code' })
-
--- file tree
-vim.keymap.set("n", "<leader>ft", ":NvimTreeToggle<CR>", { desc = "Toggle File Tree" })
+end, { desc = "Run Go YAML test for current file" })
 
