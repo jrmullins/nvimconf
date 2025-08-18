@@ -17,7 +17,21 @@ require("lazy").setup({
     "nvim-telescope/telescope.nvim",
     dependencies = { "nvim-lua/plenary.nvim" },
     config = function()
-      require("telescope").setup()
+      require("telescope").setup({
+        pickers = {
+            find_files = {
+                hidden = true,
+                no_ignore = true,
+            }
+        },
+        defaults = {
+            file_ignore_patterns = {
+            "%.git/",   -- ignore the entire .git folder
+            "node_modules/", -- you can add more here
+            "venv/",
+            },
+        },
+      })
     end
   },
   "nvim-telescope/telescope-file-browser.nvim",
@@ -136,6 +150,12 @@ require("lazy").setup({
     })
 
   end,
+},
+{
+    'numToStr/Comment.nvim',
+    opts = {
+        -- add any options here
+    }
 }
 
 })
