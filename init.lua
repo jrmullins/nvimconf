@@ -111,7 +111,7 @@ require("lazy").setup({
     build = ":TSUpdate",
     config = function()
       require("nvim-treesitter.configs").setup({
-        ensure_installed = { "go", "lua", "vim", "bash", "markdown", "yaml" },
+        ensure_installed = { "go", "lua", "vim", "bash", "markdown", "yaml", "python", "proto" },
         highlight = { enable = true },
       })
     end
@@ -310,6 +310,45 @@ lspconfig.gopls.setup({
   capabilities = capabilities,
 })
 
+-- Python LSP with dynamic venv detection
+local function find_python_path()
+  -- Common venv locations
+  local venv_patterns = {
+    "./venv/bin/python",
+    "./.venv/bin/python", 
+    "./backend/venv/bin/python",
+    "./env/bin/python"
+  }
+  
+  for _, path in ipairs(venv_patterns) do
+    if vim.fn.executable(path) == 1 then
+      return path
+    end
+  end
+  
+  -- Fallback to system python
+  return "python3"
+end
+
+lspconfig.pyright.setup({
+  capabilities = capabilities,
+  settings = {
+    python = {
+      pythonPath = find_python_path(),
+      analysis = {
+        autoSearchPaths = true,
+        useLibraryCodeForTypes = true
+      }
+    }
+  },
+  root_dir = lspconfig.util.root_pattern("pyrightconfig.json", "pyproject.toml", "setup.py", ".git")
+})
+
+-- Protobuf LSP
+lspconfig.buf_ls.setup({
+  capabilities = capabilities,
+})
+
 -- LSP keymaps (auto-attached when LSP server starts)
 vim.api.nvim_create_autocmd("LspAttach", {
   callback = function(ev)
@@ -378,4 +417,9 @@ vim.api.nvim_create_user_command("GoYamlTest", function()
   local filename = vim.fn.expand("%:t")
   vim.cmd('!go test -v ./internal/functional_test -run "^TestApi$/^' .. filename .. '$"')
 end, { desc = "Run Go YAML test for current file" })
+
+-- Quit All Command
+vim.api.nvim_create_user_command("QQ", function()
+  vim.cmd("qall")
+end, { desc = "Quit all buffers and windows" })
 
