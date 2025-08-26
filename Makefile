@@ -1,4 +1,4 @@
-.PHONY: lsp lsp-go lsp-python lsp-proto check-deps help
+.PHONY: lsp lsp-go lsp-python lsp-proto lsp-lua check-deps help
 
 # Default target
 help:
@@ -7,10 +7,11 @@ help:
 	@echo "  lsp-go     - Install Go LSP (gopls)"
 	@echo "  lsp-python - Install Python LSP (pyright)"
 	@echo "  lsp-proto  - Install Protobuf LSP (bufls)"
+	@echo "  lsp-lua    - Install Lua LSP (lua-language-server)"
 	@echo "  check-deps - Check if required dependencies are installed"
 
 # Install all LSP servers
-lsp: check-deps lsp-go lsp-python lsp-proto
+lsp: check-deps lsp-go lsp-python lsp-proto lsp-lua
 	@echo "✅ All LSP servers installed successfully!"
 
 # Check if required dependencies are available
@@ -48,4 +49,15 @@ lsp-proto:
 	else \
 		go install github.com/bufbuild/buf-language-server/cmd/bufls@latest && \
 		echo "✅ bufls installed successfully"; \
+	fi
+
+# Install Lua LSP server
+lsp-lua:
+	@echo "📦 Installing lua-language-server (Lua LSP)..."
+	@if command -v lua-language-server >/dev/null 2>&1; then \
+		echo "✅ lua-language-server already installed"; \
+	else \
+		echo "Installing lua-language-server via Homebrew..."; \
+		brew install lua-language-server && \
+		echo "✅ lua-language-server installed successfully"; \
 	fi
