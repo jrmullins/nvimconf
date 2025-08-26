@@ -302,6 +302,84 @@ cmp.setup({
 -- ============================================================================
 -- LSP CONFIGURATION
 -- ============================================================================
+-- NOTE: If you're having LSP installation/management issues, consider using Mason.nvim
+-- instead. Mason provides a nice UI and automatic LSP management. Uncomment the
+-- configuration below and comment out the manual LSP setup.
+--
+-- Mason setup (alternative approach):
+--[[
+{
+  "williamboman/mason.nvim",
+  config = function()
+    require("mason").setup({
+      ui = {
+        icons = {
+          package_installed = "✓",
+          package_pending = "➜",
+          package_uninstalled = "✗"
+        }
+      }
+    })
+  end,
+},
+{
+  "williamboman/mason-lspconfig.nvim",
+  dependencies = { "mason.nvim", "nvim-lspconfig" },
+  config = function()
+    require("mason-lspconfig").setup({
+      ensure_installed = { "gopls", "pyright", "buf_ls", "lua_ls" },
+      automatic_installation = true,
+    })
+    
+    -- Simplified LSP setup with Mason
+    require("mason-lspconfig").setup_handlers({
+      function(server_name)
+        require("lspconfig")[server_name].setup({
+          capabilities = capabilities,
+        })
+      end,
+      
+      ["pyright"] = function()
+        require("lspconfig").pyright.setup({
+          capabilities = capabilities,
+          settings = {
+            python = {
+              analysis = {
+                autoSearchPaths = true,
+                useLibraryCodeForTypes = true
+              }
+            }
+          }
+        })
+      end,
+      
+      ["lua_ls"] = function()
+        require("lspconfig").lua_ls.setup({
+          capabilities = capabilities,
+          settings = {
+            Lua = {
+              runtime = {
+                version = "LuaJIT",
+              },
+              diagnostics = {
+                globals = { "vim" },
+              },
+              workspace = {
+                library = vim.api.nvim_get_runtime_file("", true),
+                checkThirdParty = false,
+              },
+              telemetry = {
+                enable = false,
+              },
+            },
+          },
+        })
+      end,
+    })
+  end,
+},
+--]]
+
 local lspconfig = require("lspconfig")
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
@@ -342,6 +420,28 @@ lspconfig.pyright.setup({
     }
   },
   root_dir = lspconfig.util.root_pattern("pyrightconfig.json", "pyproject.toml", "setup.py", ".git")
+})
+
+-- Lua LSP
+lspconfig.lua_ls.setup({
+  capabilities = capabilities,
+  settings = {
+    Lua = {
+      runtime = {
+        version = "LuaJIT",
+      },
+      diagnostics = {
+        globals = { "vim" },
+      },
+      workspace = {
+        library = vim.api.nvim_get_runtime_file("", true),
+        checkThirdParty = false,
+      },
+      telemetry = {
+        enable = false,
+      },
+    },
+  },
 })
 
 -- Protobuf LSP
