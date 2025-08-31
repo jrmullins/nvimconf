@@ -155,27 +155,32 @@ require("lazy").setup({
         },
         sections = {
           lualine_a = { "mode" },
-          lualine_b = { 
+          lualine_b = {
             {
               get_repo_name,
               icon = "",
             },
-            "branch", 
-            "diff", 
-            "diagnostics" 
+            "branch",
+            "diff",
+            -- "diagnostics"
           },
-          lualine_c = { "filename" },
-          lualine_x = { "encoding", "fileformat", "filetype" },
-          lualine_y = { "progress" },
-          lualine_z = { "location" }
+          lualine_c = {
+            {
+              "filename",
+              path = 1  -- 0 = just filename, 1 = relative path, 2 = absolute path
+            }
+          },
+          lualine_x = {"filetype" },--"encoding", "fileformat", "filetype" },
+          lualine_y = { ""},--"progress" },
+          lualine_z = {"location", "progress"},--"location" }
         },
         inactive_sections = {
           lualine_a = {},
-          lualine_b = {},
-          lualine_c = { "filename" },
-          lualine_x = { "location" },
+          lualine_b = {"branch"},
+          lualine_c = { "" },
+          lualine_x = {  },
           lualine_y = {},
-          lualine_z = {}
+          lualine_z = {"location"}
         },
       })
     end,
@@ -393,17 +398,17 @@ local function find_python_path()
   -- Common venv locations
   local venv_patterns = {
     "./venv/bin/python",
-    "./.venv/bin/python", 
+    "./.venv/bin/python",
     "./backend/venv/bin/python",
     "./env/bin/python"
   }
-  
+
   for _, path in ipairs(venv_patterns) do
     if vim.fn.executable(path) == 1 then
       return path
     end
   end
-  
+
   -- Fallback to system python
   return "python3"
 end
@@ -507,6 +512,9 @@ vim.keymap.set("i", "<A-Right>", "<C-o>w", { desc = "Move word forward" })
 vim.keymap.set("i", "<S-Tab>", "<C-d>", { desc = "Unindent" })
 vim.keymap.set("n", "<S-Tab>", "<<", { desc = "Unindent line" })
 vim.keymap.set("v", "<S-Tab>", "<gv", { desc = "Unindent selection" })
+
+-- jj to escape insert mode
+vim.keymap.set("i", "jj", "<Esc>", { desc = "Exit insert mode" })
 
 -- ============================================================================
 -- CUSTOM COMMANDS
