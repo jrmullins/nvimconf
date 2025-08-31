@@ -109,10 +109,70 @@ require("lazy").setup({
   {
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter-textobjects",
+    },
     config = function()
       require("nvim-treesitter.configs").setup({
         ensure_installed = { "go", "lua", "vim", "bash", "markdown", "yaml", "python", "proto" },
         highlight = { enable = true },
+        textobjects = {
+          select = {
+            enable = true,
+            lookahead = true,
+            keymaps = {
+              -- Functions
+              ["af"] = "@function.outer",
+              ["if"] = "@function.inner",
+              -- Classes
+              ["ac"] = "@class.outer",
+              ["ic"] = "@class.inner",
+              -- Conditionals
+              ["ai"] = "@conditional.outer",
+              ["ii"] = "@conditional.inner",
+              -- Loops
+              ["al"] = "@loop.outer",
+              ["il"] = "@loop.inner",
+              -- Parameters/arguments
+              ["aa"] = "@parameter.outer",
+              ["ia"] = "@parameter.inner",
+              -- Calls
+              ["aC"] = "@call.outer",
+              ["iC"] = "@call.inner",
+              -- Comments
+              ["aO"] = "@comment.outer",
+              ["iO"] = "@comment.inner",
+            },
+          },
+          move = {
+            enable = true,
+            set_jumps = true,
+            goto_next_start = {
+              ["]f"] = "@function.outer",
+              ["]c"] = "@class.outer",
+              ["]l"] = "@loop.outer",
+              ["]i"] = "@conditional.outer",
+            },
+            goto_next_end = {
+              ["]F"] = "@function.outer",
+              ["]C"] = "@class.outer",
+              ["]L"] = "@loop.outer",
+              ["]I"] = "@conditional.outer",
+            },
+            goto_previous_start = {
+              ["[f"] = "@function.outer",
+              ["[c"] = "@class.outer",
+              ["[l"] = "@loop.outer",
+              ["[i"] = "@conditional.outer",
+            },
+            goto_previous_end = {
+              ["[F"] = "@function.outer",
+              ["[C"] = "@class.outer",
+              ["[L"] = "@loop.outer",
+              ["[I"] = "@conditional.outer",
+            },
+          },
+        },
       })
     end
   },
