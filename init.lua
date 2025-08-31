@@ -50,6 +50,14 @@ require("lazy").setup({
     "nvim-telescope/telescope.nvim",
     dependencies = { "nvim-lua/plenary.nvim" },
     config = function()
+      local actions = require("telescope.actions")
+      
+      local open_after_tree = function(prompt_bufnr)
+        vim.defer_fn(function()
+          actions.select_default(prompt_bufnr)
+        end, 100) -- Delay allows filetype and plugins to settle before opening
+      end
+      
       require("telescope").setup({
         pickers = {
           find_files = {
@@ -63,6 +71,10 @@ require("lazy").setup({
             "node_modules/",
             "venv/",
             "gen/",
+          },
+          mappings = {
+            i = { ["<CR>"] = open_after_tree },
+            n = { ["<CR>"] = open_after_tree },
           },
         },
       })
@@ -121,55 +133,10 @@ require("lazy").setup({
             enable = true,
             lookahead = true,
             keymaps = {
-              -- Functions
               ["af"] = "@function.outer",
               ["if"] = "@function.inner",
-              -- Classes
-              ["ac"] = "@class.outer",
+              ["ac"] = "@class.outer", 
               ["ic"] = "@class.inner",
-              -- Conditionals
-              ["ai"] = "@conditional.outer",
-              ["ii"] = "@conditional.inner",
-              -- Loops
-              ["al"] = "@loop.outer",
-              ["il"] = "@loop.inner",
-              -- Parameters/arguments
-              ["aa"] = "@parameter.outer",
-              ["ia"] = "@parameter.inner",
-              -- Calls
-              ["aC"] = "@call.outer",
-              ["iC"] = "@call.inner",
-              -- Comments
-              ["aO"] = "@comment.outer",
-              ["iO"] = "@comment.inner",
-            },
-          },
-          move = {
-            enable = true,
-            set_jumps = true,
-            goto_next_start = {
-              ["]f"] = "@function.outer",
-              ["]c"] = "@class.outer",
-              ["]l"] = "@loop.outer",
-              ["]i"] = "@conditional.outer",
-            },
-            goto_next_end = {
-              ["]F"] = "@function.outer",
-              ["]C"] = "@class.outer",
-              ["]L"] = "@loop.outer",
-              ["]I"] = "@conditional.outer",
-            },
-            goto_previous_start = {
-              ["[f"] = "@function.outer",
-              ["[c"] = "@class.outer",
-              ["[l"] = "@loop.outer",
-              ["[i"] = "@conditional.outer",
-            },
-            goto_previous_end = {
-              ["[F"] = "@function.outer",
-              ["[C"] = "@class.outer",
-              ["[L"] = "@loop.outer",
-              ["[I"] = "@conditional.outer",
             },
           },
         },
