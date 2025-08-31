@@ -214,7 +214,12 @@ require("lazy").setup({
           section_separators = { left = "", right = "" },
         },
         sections = {
-          lualine_a = { "mode" },
+          lualine_a = {
+            {
+              "filename",
+              path = 1  -- 0 = just filename, 1 = relative path, 2 = absolute path
+            }
+          },
           lualine_b = {
             {
               get_repo_name,
@@ -224,14 +229,9 @@ require("lazy").setup({
             "diff",
             -- "diagnostics"
           },
-          lualine_c = {
-            {
-              "filename",
-              path = 1  -- 0 = just filename, 1 = relative path, 2 = absolute path
-            }
-          },
-          lualine_x = {"filetype" },--"encoding", "fileformat", "filetype" },
-          lualine_y = { ""},--"progress" },
+          lualine_c = {""}, -- "mode"
+          lualine_x = {"" },--"encoding", "fileformat", "filetype" },
+          lualine_y = {"filetype"},--"progress" },
           lualine_z = {"location", "progress"},--"location" }
         },
         inactive_sections = {
