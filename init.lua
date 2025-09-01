@@ -7,8 +7,7 @@
 -- ============================================================================
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
-  vim.fn.system({
-    "git", "clone", "--filter=blob:none",
+  vim.fn.system({ "git", "clone", "--filter=blob:none",
     "https://github.com/folke/lazy.nvim.git",
     lazypath,
   })
@@ -224,6 +223,19 @@ require("lazy").setup({
     opts = {},
   },
   'Bekaboo/deadcolumn.nvim',
+  {
+      "sphamba/smear-cursor.nvim",
+      opts = {
+        cursor_color="#0088ff",
+        stiffness = 0.3,
+        trailing_stiffness = 0.1,
+        trailing_exponent = 5,
+        damping = 0.5,
+        never_draw_over_target = true,
+        hide_target_hack = true,
+        gamma = 1,
+      }
+  },
 
   -- Color Schemes
   {
