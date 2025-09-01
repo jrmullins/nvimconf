@@ -135,7 +135,7 @@ require("lazy").setup({
             keymaps = {
               ["af"] = "@function.outer",
               ["if"] = "@function.inner",
-              ["ac"] = "@class.outer", 
+              ["ac"] = "@class.outer",
               ["ic"] = "@class.inner",
             },
           },
@@ -223,6 +223,7 @@ require("lazy").setup({
     dependencies = { "nvim-treesitter/nvim-treesitter", "echasnovski/mini.nvim" },
     opts = {},
   },
+  'Bekaboo/deadcolumn.nvim',
 
   -- Color Schemes
   {
@@ -284,6 +285,9 @@ vim.o.smarttab = true
 
 -- Enable filetype detection
 vim.cmd("filetype plugin indent on")
+
+-- Set colorcolumn for deadcolumn plugin
+vim.o.colorcolumn = "80"
 
 -- ============================================================================
 -- LANGUAGE-SPECIFIC CONFIGURATION
