@@ -82,13 +82,14 @@ require("lazy").setup({
   "nvim-telescope/telescope-file-browser.nvim",
   {
     "nvim-tree/nvim-tree.lua",
-    lazy = false,
+    lazy = true,
     dependencies = { "nvim-tree/nvim-web-devicons" },
+    cmd = { "NvimTreeToggle", "NvimTreeFocus", "NvimTreeFindFile" },
     config = function()
       require("nvim-tree").setup({
         view = {
           width = 30,
-          side = "left",
+          side = "right",
           preserve_window_proportions = true,
         },
         filters = {
@@ -247,8 +248,18 @@ require("lazy").setup({
   {
     "folke/tokyonight.nvim",
     lazy = false,
-    priority = 1000,
+    priority = 1,
     opts = {},
+  },
+  {
+    "catppuccin/nvim",
+    name = "catppuccin",
+    priority = 0
+  },
+  {
+      "rebelot/kanagawa.nvim",
+      name = "kanagawa",
+      priority = 0
   },
 
   -- Utility Plugins
@@ -520,8 +531,9 @@ require("telescope").load_extension("file_browser")
 -- COLORSCHEME
 -- ============================================================================
 vim.g.material_style = "Darker"
-vim.cmd.colorscheme("tokyonight")
-
+vim.cmd.colorscheme("tokyonight-night")
+-- vim.cmd.colorscheme("catppuccin-mocha")
+-- vim.cmd.colorscheme("kanagawa-dragon")
 
 -- ============================================================================
 -- KEYMAPS
