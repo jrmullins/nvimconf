@@ -114,6 +114,15 @@ require("lazy").setup({
             })
         end,
     },
+    {
+        'stevearc/aerial.nvim',
+        opts = {},
+        -- Optional dependencies
+        dependencies = {
+            "nvim-treesitter/nvim-treesitter",
+            "nvim-tree/nvim-web-devicons"
+        },
+    },
 
     -- Treesitter
     {
@@ -124,8 +133,9 @@ require("lazy").setup({
         },
         config = function()
             require("nvim-treesitter.configs").setup({
-                ensure_installed = { "go", "lua", "vim", "bash", "markdown", "yaml", "python", "proto" },
+                ensure_installed = { "go", "lua", "vim", "bash", "markdown", "yaml", "python", "proto", "sql" },
                 highlight = { enable = true },
+                ident = { enable = true },
                 textobjects = {
                     select = {
                         enable = true,
@@ -230,7 +240,7 @@ require("lazy").setup({
             trailing_stiffness = 0.1,
             trailing_exponent = 5,
             damping = 0.5,
-            never_draw_over_target = true,
+ 
             hide_target_hack = true,
             gamma = 1,
         }
@@ -289,6 +299,43 @@ require("lazy").setup({
             })
         end
     },
+    {
+        "folke/trouble.nvim",
+        opts = {}, -- for default options, refer to the configuration section for custom setup.
+        cmd = "Trouble",
+        keys = {
+            {
+                "<leader>xx",
+                "<cmd>Trouble diagnostics toggle<cr>",
+                desc = "Diagnostics (Trouble)",
+            },
+            {
+                "<leader>xX",
+                "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
+                desc = "Buffer Diagnostics (Trouble)",
+            },
+            {
+                "<leader>cs",
+                "<cmd>Trouble symbols toggle focus=false<cr>",
+                desc = "Symbols (Trouble)",
+            },
+            {
+                "<leader>cl",
+                "<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
+                desc = "LSP Definitions / references / ... (Trouble)",
+            },
+            {
+                "<leader>xL",
+                "<cmd>Trouble loclist toggle<cr>",
+                desc = "Location List (Trouble)",
+            },
+            {
+                "<leader>xQ",
+                "<cmd>Trouble qflist toggle<cr>",
+                desc = "Quickfix List (Trouble)",
+            },
+        },
+    }
 })
 
 -- ============================================================================
@@ -545,7 +592,8 @@ vim.cmd.colorscheme("tokyonight-night")
 vim.keymap.set("n", "<leader>ff", "<cmd>Telescope find_files<cr>", { desc = "Find Files" })
 vim.keymap.set("n", "<leader>fg", "<cmd>Telescope live_grep<cr>", { desc = "Live Grep" })
 vim.keymap.set("n", "<leader>fd", "<cmd>Telescope file_browser<cr>", { desc = "File Browser" })
-vim.keymap.set("n", "<leader>o", "<cmd>Telescope lsp_document_symbols<cr>", { desc = "Document Symbols" })
+-- vim.keymap.set("n", "<leader>o", "<cmd>Telescope lsp_document_symbols<cr>", { desc = "Document Symbols" })
+vim.keymap.set("n", "<leader>o", "<cmd>AerialToggle!<cr>", { desc = "Aerial Outline" })
 vim.keymap.set("n", "<leader>gs", require("telescope.builtin").git_status, { desc = "Git Status" })
 
 -- LSP
@@ -575,6 +623,10 @@ vim.keymap.set("i", "jj", "<Esc>", { desc = "Exit insert mode" })
 
 -- NoNeckPain
 vim.keymap.set("n", "<leader>np", "<cmd>NoNeckPain<cr>", { desc = "No Neck Pain"})
+
+-- Trouble
+vim.keymap.set("n", "<leader>xx", "<cmd>Trouble<cr>", { desc = "Trouble" })
+vim.keymap.set("n", "<leader>xo", "<cmd>Trouble symbols toggle focus=false<cr>", { desc = "Trouble objects" })
 -- ============================================================================
 -- CUSTOM COMMANDS
 -- ============================================================================
