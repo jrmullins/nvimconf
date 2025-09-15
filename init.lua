@@ -235,6 +235,10 @@ require("lazy").setup({
             gamma = 1,
         }
     },
+    {
+        "shortcuts/no-neck-pain.nvim",
+        version = "*"
+    },
 
     -- Color Schemes
     {
@@ -569,6 +573,8 @@ vim.keymap.set("v", "<S-Tab>", "<gv", { desc = "Unindent selection" })
 -- jj to escape insert mode
 vim.keymap.set("i", "jj", "<Esc>", { desc = "Exit insert mode" })
 
+-- NoNeckPain
+vim.keymap.set("n", "<leader>np", "<cmd>NoNeckPain<cr>", { desc = "No Neck Pain"})
 -- ============================================================================
 -- CUSTOM COMMANDS
 -- ============================================================================
