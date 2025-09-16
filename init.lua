@@ -60,6 +60,7 @@ require("lazy").setup({
                     find_files = {
                         hidden = true,
                         no_ignore = true,
+                        find_command = {"rg", "--files", "--sortr=modified"},
                     }
                 },
                 defaults = {
@@ -240,7 +241,6 @@ require("lazy").setup({
             trailing_stiffness = 0.1,
             trailing_exponent = 5,
             damping = 0.5,
- 
             hide_target_hack = true,
             gamma = 1,
         }
@@ -281,6 +281,13 @@ require("lazy").setup({
         opts = {}
     },
     {
+        "folke/snacks.nvim",
+        opts = {
+            input = { enabled = true },
+            picker = { enabled = true }
+        }
+    },
+    {
         "greggh/claude-code.nvim",
         dependencies = { "nvim-lua/plenary.nvim" },
         config = function()
@@ -301,7 +308,24 @@ require("lazy").setup({
     },
     {
         "folke/trouble.nvim",
-        opts = {}, -- for default options, refer to the configuration section for custom setup.
+        opts = {
+            modes = {
+                diagnostics = {
+                    win = {
+                        position = "bottom",
+                        size = { height = 15 },
+                        border = "rounded",
+                    },
+                },
+                symbols = {
+                    win = {
+                        position = "right",
+                        size = { width = 40 },
+                        border = "rounded",
+                    },
+                },
+            },
+        },
         cmd = "Trouble",
         keys = {
             {
@@ -346,6 +370,11 @@ vim.g.mapleader = " "
 -- Line numbers
 vim.o.number = true
 vim.o.relativenumber = true
+
+-- Command line height and behavior
+vim.o.cmdheight = 2
+vim.o.showcmd = true
+vim.o.showmode = true
 
 -- Indentation
 vim.o.tabstop = 4
@@ -557,6 +586,15 @@ lspconfig.buf_ls.setup({
     capabilities = capabilities,
 })
 
+-- Configure LSP UI handlers
+vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
+    border = "rounded",
+})
+
+vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
+    border = "rounded",
+})
+
 -- LSP keymaps (auto-attached when LSP server starts)
 vim.api.nvim_create_autocmd("LspAttach", {
     callback = function(ev)
@@ -597,7 +635,9 @@ vim.keymap.set("n", "<leader>o", "<cmd>AerialToggle!<cr>", { desc = "Aerial Outl
 vim.keymap.set("n", "<leader>gs", require("telescope.builtin").git_status, { desc = "Git Status" })
 
 -- LSP
-vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "Code Action" })
+vim.keymap.set("n", "<leader>ca", function()
+    vim.lsp.buf.code_action()
+end, { desc = "Code Action" })
 vim.keymap.set("n", "<leader>k", vim.lsp.buf.signature_help, { desc = "Signature Help" })
 vim.keymap.set("n", "<leader>e", function()
     vim.diagnostic.open_float(nil, { border = "rounded", focus = false })
@@ -625,7 +665,8 @@ vim.keymap.set("i", "jj", "<Esc>", { desc = "Exit insert mode" })
 vim.keymap.set("n", "<leader>np", "<cmd>NoNeckPain<cr>", { desc = "No Neck Pain"})
 
 -- Trouble
-vim.keymap.set("n", "<leader>xx", "<cmd>Trouble<cr>", { desc = "Trouble" })
+vim.keymap.set("n", "<leader>xm", "<cmd>Trouble<cr>", { desc = "Trouble Menu" })
+vim.keymap.set("n", "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", { desc = "Trouble Diagnostics" })
 vim.keymap.set("n", "<leader>xo", "<cmd>Trouble symbols toggle focus=false<cr>", { desc = "Trouble objects" })
 -- ============================================================================
 -- CUSTOM COMMANDS
