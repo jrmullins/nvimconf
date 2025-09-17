@@ -25,7 +25,25 @@ require("lazy").setup({
             "ray-x/guihua.lua",
             "nvim-treesitter/nvim-treesitter",
             "neovim/nvim-lspconfig"
-        }
+        },
+        opts = {
+            -- lsp_keymaps = false,
+            -- other options
+        },
+        config = function(lp, opts)
+            require("go").setup(opts)
+            local format_sync_grp = vim.api.nvim_create_augroup("GoFormat", {})
+            vim.api.nvim_create_autocmd("BufWritePre", {
+                pattern = "*.go",
+                callback = function()
+                    require('go.format').goimports()
+                end,
+                group = format_sync_grp,
+            })
+        end,
+        event = {"CmdlineEnter"},
+        ft = {"go", 'gomod'},
+        build = ':lua require("go.install").update_all_sync()'
     },
     {
         "cuducos/yaml.nvim",
@@ -408,13 +426,6 @@ vim.api.nvim_create_autocmd("FileType", {
     end,
 })
 
--- Auto-run goimports on save
-vim.api.nvim_create_autocmd("BufWritePre", {
-    pattern = "*.go",
-    callback = function()
-        require("go.format").goimport()
-    end,
-})
 
 -- ============================================================================
 -- COMPLETION SETUP
@@ -677,6 +688,7 @@ vim.api.nvim_create_user_command("GoYamlTest", function()
     local filename = vim.fn.expand("%:t")
     vim.cmd('!go test -v ./internal/functional_test -run "^TestApi$/^' .. filename .. '$"')
 end, { desc = "Run Go YAML test for current file" })
+vim.keymap.set("n", "<leader>gyt", "<cmd>GoYamlTest<cr>", { desc = "Go Yaml Test" })
 
 -- Quit All Command
 vim.api.nvim_create_user_command("QQ", function()
