@@ -14,6 +14,7 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+
 -- ============================================================================
 -- PLUGIN SPECIFICATIONS
 -- ============================================================================
@@ -183,6 +184,16 @@ require("lazy").setup({
         dependencies = { "nvim-lua/plenary.nvim" },
         config = true
     },
+    {
+        "f-person/git-blame.nvim",
+        event = "VeryLazy",
+        opts = {
+            enabled = true,
+            message_template = " <author> • <date> • <summary> • <sha>",
+            date_format = "%m-%Y",
+            virtual_text_column = 1,
+        },
+    },
 
     -- UI and Visual Enhancements
     {
@@ -223,7 +234,7 @@ require("lazy").setup({
                         "diff",
                         -- "diagnostics"
                     },
-                    lualine_c = {""}, -- "mode"
+                    -- lualine_c = { { git_blame.get_current_blame.text, cond=git_blame.is_blame_text_available } }, -- "mode"
                     lualine_x = {"" },--"encoding", "fileformat", "filetype" },
                     lualine_y = {"filetype"},--"progress" },
                     lualine_z = {"location", "progress"},--"location" }
@@ -679,6 +690,37 @@ vim.keymap.set("n", "<leader>np", "<cmd>NoNeckPain<cr>", { desc = "No Neck Pain"
 vim.keymap.set("n", "<leader>xm", "<cmd>Trouble<cr>", { desc = "Trouble Menu" })
 vim.keymap.set("n", "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", { desc = "Trouble Diagnostics" })
 vim.keymap.set("n", "<leader>xo", "<cmd>Trouble symbols toggle focus=false<cr>", { desc = "Trouble objects" })
+
+-- Comment shortcuts (more convenient than gcc)
+vim.keymap.set("n", "<C-/>", function() require("Comment.api").toggle.linewise.current() end, { desc = "Toggle comment" })
+vim.keymap.set("v", "<C-/>", function() require("Comment.api").toggle.linewise(vim.fn.visualmode()) end, { desc = "Toggle comment" })
+vim.keymap.set("n", "<leader>/", function() require("Comment.api").toggle.linewise.current() end, { desc = "Toggle comment" })
+vim.keymap.set("v", "<leader>/", function() require("Comment.api").toggle.linewise(vim.fn.visualmode()) end, { desc = "Toggle comment" })
+
+-- Tab management
+vim.keymap.set("n", "<leader>tn", "<cmd>tabnew<cr>", { desc = "New tab" })
+vim.keymap.set("n", "<leader>tc", "<cmd>tabclose<cr>", { desc = "Close tab" })
+vim.keymap.set("n", "<leader>to", "<cmd>tabonly<cr>", { desc = "Close other tabs" })
+vim.keymap.set("n", "<leader>]", "<cmd>tabnext<cr>", { desc = "Next tab" })
+vim.keymap.set("n", "<leader>[", "<cmd>tabprevious<cr>", { desc = "Previous tab" })
+vim.keymap.set("n", "<leader>1", "1gt", { desc = "Go to tab 1" })
+vim.keymap.set("n", "<leader>2", "2gt", { desc = "Go to tab 2" })
+vim.keymap.set("n", "<leader>3", "3gt", { desc = "Go to tab 3" })
+vim.keymap.set("n", "<leader>4", "4gt", { desc = "Go to tab 4" })
+vim.keymap.set("n", "<leader>5", "5gt", { desc = "Go to tab 5" })
+
+-- Lua
+vim.g.gitblame_display_virtual_text = 0 -- Disable virtual text
+local git_blame = require('gitblame')
+
+require('lualine').setup({
+    sections = {
+            lualine_c = {
+                { git_blame.get_current_blame_text, cond = git_blame.is_blame_text_available }
+            }
+    }
+})
+
 -- ============================================================================
 -- CUSTOM COMMANDS
 -- ============================================================================
