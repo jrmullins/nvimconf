@@ -584,6 +584,10 @@ lspconfig.pyright.setup({
 -- Lua LSP
 lspconfig.lua_ls.setup({
     capabilities = capabilities,
+    root_dir = function(fname)
+        local root_pattern = lspconfig.util.root_pattern(".luarc.json", ".luarc.jsonc", ".luacheckrc", ".stylua.toml", "stylua.toml", "selene.toml", "selene.yml", ".git")
+        return root_pattern(fname) or vim.fn.getcwd()
+    end,
     settings = {
         Lua = {
             runtime = {
