@@ -12,7 +12,6 @@ return {
         "nvim-lualine/lualine.nvim",
         dependencies = { "nvim-tree/nvim-web-devicons" },
         config = function()
-            local git_blame_available, git_blame = pcall(require, "gitblame")
             local function get_repo_name()
                 local handle = io.popen("git rev-parse --show-toplevel 2>/dev/null")
                 if handle then
@@ -23,6 +22,30 @@ return {
                     end
                 end
                 return ""
+            end
+
+            local last_blame = ""
+            local function get_snacks_blame()
+                local ok, snacks = pcall(require, "snacks")
+                if not ok or not snacks.git or not snacks.git.blame_line then
+                    return ""
+                end
+                local blame = snacks.git.blame_line({ format = "<author> • <summary>" })
+                if type(blame) == "table" then
+                    return blame.text or ""
+                end
+                return blame or ""
+            end
+
+            local function snacks_blame()
+                last_blame = get_snacks_blame()
+                return last_blame
+            end
+
+            local function modified_color()
+                if vim.bo.modified then
+                    return { fg = "#FFD700" }
+                end
             end
 
             require("lualine").setup({
@@ -38,11 +61,7 @@ return {
                             path = 1,
                             file_status = true,
                             symbols = {},
-                            color = function()
-                                if vim.bo.modified then
-                                    return { bg = "#FFD700" }
-                                end
-                            end,
+                            color = modified_color,
                         },
                     },
                     lualine_b = {
@@ -51,12 +70,14 @@ return {
                         "diff",
                         "diagnostics",
                     },
-                    lualine_c = git_blame_available and {
+                    lualine_c = {
                         {
-                            git_blame.get_current_blame_text,
-                            cond = git_blame.is_blame_text_available,
+                            snacks_blame,
+                            cond = function()
+                                return last_blame ~= ""
+                            end,
                         },
-                    } or {},
+                    },
                     lualine_x = {
                         "encoding",
                         "filetype",
@@ -74,16 +95,6 @@ return {
                 },
             })
         end,
-    },
-
-    {
-        "lukas-reineke/indent-blankline.nvim",
-        main = "ibl",
-        ft = { "yaml" },
-        opts = {
-            indent = { char = "│" },
-            scope = { enabled = false },
-        },
     },
 
     {

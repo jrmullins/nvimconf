@@ -10,7 +10,7 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-local modules = { "plugins.lang", "plugins.nav", "plugins.ui", "plugins.tools" }
+local modules = { "plugins.lang", "plugins.snacks", "plugins.ui", "plugins.tools" }
 local specs = {}
 for _, module in ipairs(modules) do
     local ok, mod_specs = pcall(require, module)
