@@ -28,7 +28,7 @@ require("lazy").setup({
             "neovim/nvim-lspconfig"
         },
         opts = {
-            -- lsp_keymaps = false,
+            lsp_keymaps = false,
             -- other options
         },
         config = function(lp, opts)
@@ -41,11 +41,15 @@ require("lazy").setup({
                 end,
                 group = format_sync_grp,
             })
+            local gopls_cfg = require("go.lsp").config()
+            vim.lsp.config("gopls", gopls_cfg)
+            vim.lsp.enable("gopls")
         end,
         event = {"CmdlineEnter"},
         ft = {"go", 'gomod'},
         build = ':lua require("go.install").update_all_sync()'
     },
+
     {
         "cuducos/yaml.nvim",
         ft = { "yaml" },
@@ -55,6 +59,29 @@ require("lazy").setup({
             "nvim-telescope/telescope.nvim",
             "ibhagwan/fzf-lua"
         },
+    },
+
+    {
+        "hat0uma/csvview.nvim",
+        ---@module "csvview"
+        ---@type CsvView.Options
+        opts = {
+            parser = { comments = { "#", "//" } },
+            keymaps = {
+                -- Text objects for selecting fields
+                textobject_field_inner = { "if", mode = { "o", "x" } },
+                textobject_field_outer = { "af", mode = { "o", "x" } },
+                -- Excel-like navigation:
+                -- Use <Tab> and <S-Tab> to move horizontally between fields.
+                -- Use <Enter> and <S-Enter> to move vertically between rows and place the cursor at the end of the field.
+                -- Note: In terminals, you may need to enable CSI-u mode to use <S-Tab> and <S-Enter>.
+                jump_next_field_end = { "<Tab>", mode = { "n", "v" } },
+                jump_prev_field_end = { "<S-Tab>", mode = { "n", "v" } },
+                jump_next_row = { "<Enter>", mode = { "n", "v" } },
+                jump_prev_row = { "<S-Enter>", mode = { "n", "v" } },
+            },
+        },
+        cmd = { "CsvViewEnable", "CsvViewDisable", "CsvViewToggle" },
     },
 
     -- Completion and Snippets
@@ -97,6 +124,7 @@ require("lazy").setup({
             })
         end
     },
+
     "nvim-telescope/telescope-file-browser.nvim",
     {
         "nvim-tree/nvim-tree.lua",
@@ -134,6 +162,7 @@ require("lazy").setup({
             })
         end,
     },
+
     {
         'stevearc/aerial.nvim',
         opts = {},
@@ -153,7 +182,7 @@ require("lazy").setup({
         },
         config = function()
             require("nvim-treesitter.configs").setup({
-                ensure_installed = { "go", "lua", "vim", "bash", "markdown", "yaml", "python", "proto", "sql" },
+                ensure_installed = { "go", "lua", "vim", "bash", "markdown", "yaml", "python", "proto", "sql","ruby" },
                 highlight = { enable = true },
                 ident = { enable = true },
                 textobjects = {
@@ -179,11 +208,13 @@ require("lazy").setup({
             require("gitsigns").setup()
         end
     },
+
     {
         "sindrets/diffview.nvim",
         dependencies = { "nvim-lua/plenary.nvim" },
         config = true
     },
+
     {
         "f-person/git-blame.nvim",
         event = "VeryLazy",
@@ -222,7 +253,14 @@ require("lazy").setup({
                     lualine_a = {
                         {
                             "filename",
-                            path = 1  -- 0 = just filename, 1 = relative path, 2 = absolute path
+                            path = 1,  -- 0 = just filename, 1 = relative path, 2 = absolute path
+                            file_status = true,
+                            symbols = {
+                                -- modified = "[ಠ_ಠ]",
+                            },
+                            color = function(section)
+                                return { bg = vim.bo.modified and '#ccff00' }
+                            end,
                         }
                     },
                     lualine_b = {
@@ -250,18 +288,22 @@ require("lazy").setup({
             })
         end,
     },
+
     {
         "lukas-reineke/indent-blankline.nvim",
         main = "ibl",
         ft = { "yaml", "python", "lua" },
         opts = {}
     },
+
     {
         "MeanderingProgrammer/render-markdown.nvim",
         dependencies = { "nvim-treesitter/nvim-treesitter", "echasnovski/mini.nvim" },
         opts = {},
     },
+
     'Bekaboo/deadcolumn.nvim',
+
     {
         "sphamba/smear-cursor.nvim",
         opts = {
@@ -274,6 +316,7 @@ require("lazy").setup({
             gamma = 1,
         }
     },
+
     {
         "shortcuts/no-neck-pain.nvim",
         version = "*"
@@ -285,22 +328,37 @@ require("lazy").setup({
         name = "dracula",
         priority = -1
     },
+
     { "marko-cerovac/material.nvim" },
+
     {
         "folke/tokyonight.nvim",
         lazy = false,
         priority = 1,
         opts = {},
     },
+
     {
         "catppuccin/nvim",
         name = "catppuccin",
         priority = 0
     },
+
     {
         "rebelot/kanagawa.nvim",
         name = "kanagawa",
         priority = 0
+    },
+
+    {
+        "KijitoraFinch/nanode.nvim",
+        priority = 1000,
+        config = function()
+            require("nanode").setup({
+                transparent = false,
+            })
+            vim.cmd.colorscheme("nanode")
+        end,
     },
 
     -- Utility Plugins
@@ -309,6 +367,7 @@ require("lazy").setup({
         "numToStr/Comment.nvim",
         opts = {}
     },
+
     {
         "folke/snacks.nvim",
         opts = {
@@ -316,6 +375,7 @@ require("lazy").setup({
             picker = { enabled = true }
         }
     },
+
     {
         "greggh/claude-code.nvim",
         dependencies = { "nvim-lua/plenary.nvim" },
@@ -335,6 +395,7 @@ require("lazy").setup({
             })
         end
     },
+
     {
         "folke/trouble.nvim",
         opts = {
@@ -459,6 +520,15 @@ cmp.setup({
 })
 
 -- ============================================================================
+-- TREESITTER FOLDING
+-- ============================================================================
+vim.o.foldmethod = "expr"
+vim.o.foldexpr = "nvim_treesitter#foldexpr()"
+vim.o.foldenable = true
+vim.o.foldlevel = 99
+vim.o.foldlevelstart = 99
+
+-- ============================================================================
 -- LSP CONFIGURATION
 -- ============================================================================
 -- NOTE: If you're having LSP installation/management issues, consider using Mason.nvim
@@ -485,6 +555,7 @@ cmp.setup({
     "williamboman/mason-lspconfig.nvim",
     dependencies = { "mason.nvim", "nvim-lspconfig" },
     config = function()
+        local capabilities = require("cmp_nvim_lsp").default_capabilities()
         require("mason-lspconfig").setup({
             ensure_installed = { "gopls", "pyright", "buf_ls", "lua_ls" },
             automatic_installation = true,
@@ -493,13 +564,14 @@ cmp.setup({
         -- Simplified LSP setup with Mason
         require("mason-lspconfig").setup_handlers({
             function(server_name)
-                require("lspconfig")[server_name].setup({
+                vim.lsp.config(server_name, {
                     capabilities = capabilities,
                 })
+                vim.lsp.enable(server_name)
             end,
 
             ["pyright"] = function()
-                require("lspconfig").pyright.setup({
+                vim.lsp.config("pyright", {
                     capabilities = capabilities,
                     settings = {
                         python = {
@@ -510,10 +582,11 @@ cmp.setup({
                         }
                     }
                 })
+                vim.lsp.enable("pyright")
             end,
 
             ["lua_ls"] = function()
-                require("lspconfig").lua_ls.setup({
+                vim.lsp.config("lua_ls", {
                     capabilities = capabilities,
                     settings = {
                         Lua = {
@@ -533,17 +606,17 @@ cmp.setup({
                         },
                     },
                 })
+                vim.lsp.enable("lua_ls")
             end,
         })
     end,
 },
 --]]
 
-local lspconfig = require("lspconfig")
+local util = require("lspconfig.util")
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
--- Go LSP
-lspconfig.gopls.setup({
+vim.lsp.config("*", {
     capabilities = capabilities,
 })
 
@@ -567,8 +640,7 @@ local function find_python_path()
     return "python3"
 end
 
-lspconfig.pyright.setup({
-    capabilities = capabilities,
+vim.lsp.config("pyright", {
     settings = {
         python = {
             pythonPath = find_python_path(),
@@ -578,12 +650,11 @@ lspconfig.pyright.setup({
             }
         }
     },
-    root_dir = lspconfig.util.root_pattern("pyrightconfig.json", "pyproject.toml", "setup.py", ".git")
+    root_dir = util.root_pattern("pyrightconfig.json", "pyproject.toml", "setup.py", ".git")
 })
 
 -- Lua LSP
-lspconfig.lua_ls.setup({
-    capabilities = capabilities,
+vim.lsp.config("lua_ls", {
     settings = {
         Lua = {
             runtime = {
@@ -603,9 +674,35 @@ lspconfig.lua_ls.setup({
     },
 })
 
+local function buf_cmd()
+    local default_cmd = { "buf", "lsp", "serve", "--log-format=text" }
+    if vim.fn.executable("buf") == 0 then
+        return default_cmd
+    end
+
+    vim.fn.system({ "buf", "lsp", "--help" })
+    if vim.v.shell_error == 0 then
+        return default_cmd
+    end
+
+    return { "buf", "beta", "lsp", "serve", "--log-format=text" }
+end
+
 -- Protobuf LSP
-lspconfig.buf_ls.setup({
-    capabilities = capabilities,
+vim.lsp.config("buf_ls", {
+    cmd = buf_cmd(),
+})
+
+vim.lsp.config("ruby_lsp", require("ruby_lsp"))
+
+vim.lsp.enable({ "pyright", "lua_ls", "buf_ls", "ruby_lsp" })
+
+vim.diagnostic.config({
+    virtual_text = {
+        prefix = "●",
+        spacing = 2,
+    },
+    underline = true,
 })
 
 -- Configure LSP UI handlers
@@ -715,9 +812,9 @@ local git_blame = require('gitblame')
 
 require('lualine').setup({
     sections = {
-            lualine_c = {
-                { git_blame.get_current_blame_text, cond = git_blame.is_blame_text_available }
-            }
+        lualine_c = {
+            { git_blame.get_current_blame_text, cond = git_blame.is_blame_text_available }
+        }
     }
 })
 
@@ -737,3 +834,12 @@ vim.api.nvim_create_user_command("QQ", function()
     vim.cmd("qall")
 end, { desc = "Quit all buffers and windows" })
 
+-- I don't know why but uncommenting out the below will enable ruby
+-- local lspconfig = require("lspconfig")
+--
+-- lspconfig.ruby_lsp.setup({
+--   cmd = { "ruby-lsp" },
+--   filetypes = { "ruby", "eruby" },
+--   root_dir = lspconfig.util.root_pattern("Gemfile", ".ruby-lsp", ".git"),
+--   init_options = { formatter = "auto" },
+-- })
