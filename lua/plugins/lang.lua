@@ -22,11 +22,10 @@ return {
 
     {
         "ray-x/go.nvim",
+        lazy = false,
         dependencies = {
             "ray-x/guihua.lua",
         },
-        ft = { "go", "gomod" },
-        event = { "CmdlineEnter" },
         opts = function()
             local capabilities = require("cmp_nvim_lsp").default_capabilities()
             return {
@@ -38,7 +37,7 @@ return {
         end,
         config = function(_, opts)
             require("go").setup(opts)
-            local format_sync_grp = vim.api.nvim_create_augroup("GoFormat", {})
+            local format_sync_grp = vim.api.nvim_create_augroup("GoFormat", { clear = true })
             vim.api.nvim_create_autocmd("BufWritePre", {
                 pattern = "*.go",
                 callback = function()
