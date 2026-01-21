@@ -10,7 +10,10 @@ return {
 
     {
         "nvim-lualine/lualine.nvim",
-        dependencies = { "nvim-tree/nvim-web-devicons" },
+        dependencies = {
+            "nvim-tree/nvim-web-devicons",
+            "f-person/git-blame.nvim",
+        },
         config = function()
             local function get_repo_name()
                 local handle = io.popen("git rev-parse --show-toplevel 2>/dev/null")
@@ -24,27 +27,11 @@ return {
                 return ""
             end
 
-            local last_blame = ""
-            local function get_snacks_blame()
-                local ok, snacks = pcall(require, "snacks")
-                if not ok or not snacks.git or not snacks.git.blame_line then
-                    return ""
-                end
-                local blame = snacks.git.blame_line({ format = "<author> • <summary>" })
-                if type(blame) == "table" then
-                    return blame.text or ""
-                end
-                return blame or ""
-            end
-
-            local function snacks_blame()
-                last_blame = get_snacks_blame()
-                return last_blame
-            end
+            local git_blame_available, git_blame = pcall(require, "gitblame")
 
             local function modified_color()
                 if vim.bo.modified then
-                    return { bg = "#FFD700" }
+                    return { fg = "#FFD700" }
                 end
             end
 
@@ -70,14 +57,12 @@ return {
                         "diff",
                         "diagnostics",
                     },
-                    lualine_c = {
+                    lualine_c = git_blame_available and {
                         {
-                            snacks_blame,
-                            cond = function()
-                                return last_blame ~= ""
-                            end,
+                            git_blame.get_current_blame_text,
+                            cond = git_blame.is_blame_text_available,
                         },
-                    },
+                    } or {},
                     lualine_x = {
                         "encoding",
                         "filetype",
