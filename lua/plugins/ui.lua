@@ -44,7 +44,7 @@ return {
 
             local function modified_color()
                 if vim.bo.modified then
-                    return { fg = "#FFD700" }
+                    return { bg = "#FFD700" }
                 end
             end
 
