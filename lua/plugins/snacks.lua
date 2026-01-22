@@ -91,13 +91,19 @@ return {
                     end,
                     desc = "Git status (Snacks)",
                 },
-                {
-                    "<leader>o",
-                    function()
-                        require("snacks").picker.symbols()
-                    end,
-                    desc = "Symbols outline (Snacks)",
-                },
+            {
+                "<leader>o",
+                function()
+                    local snacks = require("snacks")
+                    local ok = pcall(function()
+                        snacks.picker.lsp_symbols()
+                    end)
+                    if not ok then
+                        snacks.picker.treesitter_symbols()
+                    end
+                end,
+                desc = "Symbols outline (Snacks)",
+            },
                 {
                     "<leader>z",
                     function()
