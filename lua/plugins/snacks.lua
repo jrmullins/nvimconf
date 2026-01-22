@@ -30,7 +30,17 @@ return {
                     },
                 },
             },
-            dashboard = { enabled = true },
+            dashboard = { 
+                enabled = true,
+                preset = {
+                    header = [[
+  ▘      ▜   ▖       ▘    
+▛▘▌▛▌▛▌▀▌▐   ▝▖  ▛▌▛▌▌▛▘█▌
+▄▌▌▙▌▌▌█▌▐▖  ▞   ▌▌▙▌▌▄▌▙▖
+   ▄▌                     
+                 ]],
+                },
+            },
             dim = { enabled = true },
             explorer = {
                 enabled = true,
