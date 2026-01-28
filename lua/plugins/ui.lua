@@ -5,6 +5,12 @@ return {
         priority = 1000,
         opts = {
             style = "night",
+            on_highlights = function(hl, c)
+                -- Use blue instead of orange for snacks picker borders
+                hl.SnacksPickerInputBorder = { fg = c.blue1, bg = c.bg_float }
+                hl.SnacksPickerInputTitle = { fg = c.blue1, bg = c.bg_float }
+                hl.SnacksPickerBoxTitle = { fg = c.blue1, bg = c.bg_float }
+            end,
         },
     },
 
