@@ -7,6 +7,7 @@ return {
             picker = { 
                 enabled = true,
                 sources = {
+                    files = { hidden = true },
                     explorer = {
                         layout = { layout = { position = "right", width = 25 } },
                         -- auto_close = true,
