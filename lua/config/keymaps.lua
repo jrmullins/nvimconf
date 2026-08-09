@@ -11,8 +11,11 @@ end, { desc = "Signature help" })
 map("n", "<leader>n", function()
     vim.ui.input({ prompt = "New file: ", completion = "file" }, function(path)
         if path and path ~= "" then
-            vim.fn.mkdir(vim.fn.fnamemodify(path, ":h"), "p")
-            vim.cmd("edit " .. path)
+            local resolved = vim.fn.fnamemodify(vim.fn.expand(path), ":p")
+            if vim.fn.confirm("Create " .. resolved .. "?", "&Yes\n&No", 2) == 1 then
+                vim.fn.mkdir(vim.fn.fnamemodify(resolved, ":h"), "p")
+                vim.cmd.edit(resolved)
+            end
         end
     end)
 end, { desc = "New file" })

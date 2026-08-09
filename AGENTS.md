@@ -59,6 +59,10 @@ Primary UI framework. Key pickers: `<leader>ff` (files), `<leader>fg` (grep), `<
 
 Keybinding discovery popup — press `<leader>` and wait to see all mappings. `<leader>?` shows buffer-local keymaps. Vim builtin help for `d`, `y`, `g`, `z`, `<c-w>` also available.
 
+## Custom commands
+
+- `<leader>n` — New file. Prompts for path with tab completion, expands `~`, shows resolved absolute path for confirmation, creates parent directories automatically.
+
 ## README.md
 
 Outdated — describes a monolithic init.lua that no longer exists. Do not trust for structure info.
