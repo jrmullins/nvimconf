@@ -2,6 +2,18 @@
 
 A comprehensive Neovim configuration with Go language support, modern UI enhancements, and productivity-focused plugins.
 
+## Prerequisites
+
+External tools required for full functionality:
+
+```bash
+# Go language server
+brew install gopls
+
+# Protobuf/gRPC tooling (LSP, linting, formatting)
+brew install buf
+```
+
 ## Configuration Overview
 
 ### Current Structure

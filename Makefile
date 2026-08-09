@@ -1,4 +1,4 @@
-.PHONY: lsp lsp-go lsp-python lsp-proto lsp-lua check-deps help
+.PHONY: lsp lsp-go lsp-python lsp-proto lsp-lua lsp-ruby check-deps help
 
 # Default target
 help:
@@ -11,7 +11,7 @@ help:
 	@echo "  check-deps - Check if required dependencies are installed"
 
 # Install all LSP servers
-lsp: check-deps lsp-go lsp-python lsp-proto lsp-lua
+lsp: check-deps lsp-go lsp-python lsp-proto lsp-lua lsp-ruby
 	@echo "✅ All LSP servers installed successfully!"
 
 # Check if required dependencies are available
@@ -61,3 +61,5 @@ lsp-lua:
 		brew install lua-language-server && \
 		echo "✅ lua-language-server installed successfully"; \
 	fi
+lsp-ruby:
+	gem install ruby-lsp
