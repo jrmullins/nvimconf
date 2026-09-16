@@ -75,4 +75,9 @@ return {
             { "<leader>xQ", "<cmd>Trouble qflist toggle<cr>", desc = "Trouble quickfix" },
         },
     },
+
+    {
+        "SunnyTamang/select-undo.nvim",
+        opts = {},
+    },
 }
