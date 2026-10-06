@@ -3,37 +3,6 @@ return {
         "folke/which-key.nvim",
         event = "VeryLazy",
         opts = {},
-        config = function(_, opts)
-            local wk = require("which-key")
-            wk.setup(opts)
-
-            vim.api.nvim_create_autocmd("FileType", {
-                pattern = "snacks_picker_list",
-                callback = function()
-                    wk.add({
-                        { "a", desc = "Add file/dir" },
-                        { "d", desc = "Delete" },
-                        { "r", desc = "Rename" },
-                        { "m", desc = "Move" },
-                        { "c", desc = "Copy" },
-                        { "<Tab>", desc = "Select" },
-                        { "y", desc = "Yank path" },
-                        { "p", desc = "Paste" },
-                        { "o", desc = "Open with system app" },
-                        { "u", desc = "Refresh" },
-                        { "H", desc = "Toggle hidden" },
-                        { "I", desc = "Toggle ignored" },
-                        { ".", desc = "Set cwd" },
-                        { "P", desc = "Toggle preview" },
-                        { "<CR>", desc = "Open/toggle dir" },
-                        { "h", desc = "Close dir / go up" },
-                        { "<BS>", desc = "Go up" },
-                        { "Z", desc = "Close all" },
-                        { buffer = 0 },
-                    })
-                end,
-            })
-        end,
         keys = {
             {
                 "<leader>?",

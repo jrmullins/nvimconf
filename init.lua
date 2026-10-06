@@ -1,16 +1,11 @@
--- Core options must be set before plugins load
+-- Core options must be set before plugins load (leader key in particular)
 require("config.options")
 
--- Plugin manager and specs
-require("plugins")
+-- Plugin manager; loads every spec in lua/plugins/
+require("config.lazy")
 
--- Core UX bits
-require("config.autocmds")
+-- Global keymaps
 require("config.keymaps")
-require("config.commands")
 
 -- Language Servers
 require("lsp")
-
--- Cosmetics last for faster productivity
-require("config.colors")

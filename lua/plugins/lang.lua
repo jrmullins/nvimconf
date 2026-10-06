@@ -1,90 +1,42 @@
 return {
     { "neovim/nvim-lspconfig" },
 
+    -- Teaches lua_ls about the Neovim runtime (`vim.*`) and installed plugins,
+    -- but only loads library types when a file actually requires them.
     {
-        "hrsh7th/nvim-cmp",
-        event = "InsertEnter",
-        dependencies = {
-            "hrsh7th/cmp-nvim-lsp",
-            "hrsh7th/cmp-buffer",
-            "hrsh7th/cmp-path",
-            "saadparwaiz1/cmp_luasnip",
-            "rafamadriz/friendly-snippets",
-            {
-                "L3MON4D3/LuaSnip",
-                build = (vim.fn.executable("make") == 1 and "make install_jsregexp") or nil,
+        "folke/lazydev.nvim",
+        ft = "lua",
+        opts = {
+            library = {
+                { path = "${3rd}/luv/library", words = { "vim%.uv" } },
+                { path = "snacks.nvim", words = { "Snacks" } },
             },
         },
-        config = function()
-            local cmp = require("cmp")
-            local luasnip = require("luasnip")
-
-            require("luasnip.loaders.from_vscode").lazy_load()
-            luasnip.config.setup({})
-
-            cmp.setup({
-                completion = {
-                    completeopt = "menu,menuone,noselect",
-                },
-                snippet = {
-                    expand = function(args)
-                        luasnip.lsp_expand(args.body)
-                    end,
-                },
-                window = {
-                    completion = cmp.config.window.bordered(),
-                    documentation = cmp.config.window.bordered(),
-                },
-                mapping = cmp.mapping.preset.insert({
-                    ["<C-b>"] = cmp.mapping.scroll_docs(-4),
-                    ["<C-f>"] = cmp.mapping.scroll_docs(4),
-                    ["<C-Space>"] = cmp.mapping.complete(),
-                    ["<C-e>"] = cmp.mapping.abort(),
-                    ["<CR>"] = cmp.mapping.confirm({ select = true }),
-                    ["<Tab>"] = cmp.mapping(function(fallback)
-                        if cmp.visible() then
-                            cmp.select_next_item()
-                        elseif luasnip.expand_or_locally_jumpable() then
-                            luasnip.expand_or_jump()
-                        else
-                            fallback()
-                        end
-                    end, { "i", "s" }),
-                    ["<S-Tab>"] = cmp.mapping(function(fallback)
-                        if cmp.visible() then
-                            cmp.select_prev_item()
-                        elseif luasnip.jumpable(-1) then
-                            luasnip.jump(-1)
-                        else
-                            fallback()
-                        end
-                    end, { "i", "s" }),
-                }),
-                sources = cmp.config.sources({
-                    { name = "nvim_lsp" },
-                    { name = "luasnip" },
-                }, {
-                    { name = "buffer" },
-                    { name = "path" },
-                }),
-            })
-        end,
     },
 
     {
         "nvim-treesitter/nvim-treesitter",
+        lazy = false,
         build = ":TSUpdate",
         config = function()
-            require("nvim-treesitter.configs").setup({
-                ensure_installed = { "go", "lua", "markdown", "proto" },
-                highlight = { enable = true },
+            local langs = { "go", "lua", "markdown", "markdown_inline", "proto", "python", "yaml" }
+            require("nvim-treesitter").install(langs):wait(300000)
+
+            -- The nvim-treesitter rewrite dropped `highlight = { enable = true }`,
+            -- so highlighting is started per filetype for the parsers above.
+            vim.api.nvim_create_autocmd("FileType", {
+                pattern = vim.iter(langs):map(vim.treesitter.language.get_filetypes):flatten():totable(),
+                callback = function()
+                    vim.treesitter.start()
+                end,
             })
         end,
     },
 
     {
         "MeanderingProgrammer/render-markdown.nvim",
-        dependencies = { "nvim-treesitter/nvim-treesitter", "echasnovski/mini.nvim" },
+        ft = "markdown",
+        dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" },
         opts = {},
     },
 
@@ -117,12 +69,9 @@ return {
         build = ':lua require("go.install").update_all_sync()',
     },
     {
-        'nvim-flutter/flutter-tools.nvim',
-        lazy = false,
-        dependencies = {
-            'nvim-lua/plenary.nvim',
-            'stevearc/dressing.nvim', -- optional for vim.ui.select
-        },
+        "nvim-flutter/flutter-tools.nvim",
+        ft = "dart",
+        dependencies = { "nvim-lua/plenary.nvim" }, -- vim.ui.select is handled by snacks.picker
         config = true,
-    }
+    },
 }

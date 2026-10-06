@@ -8,17 +8,18 @@ Still learning Neovim — suggest conventions or improvements when you notice th
 ## Structure
 
 - `init.lua` — entrypoint, loads modules in strict order (see below)
-- `lua/config/` — options, keymaps, autocmds, commands, colors
-- `lua/plugins/` — lazy.nvim plugin specs split into: lang, snacks, ui, tools, git
-- `lua/lsp/` — LSP config (buf_ls for protobuf) and LspAttach keymaps
+- `lua/config/` — options, lazy (lazy.nvim bootstrap), keymaps
+- `lua/plugins/` — lazy.nvim plugin specs, one file per concern: completion, lang, snacks, ui, tools, git
+- `lua/lsp/` — LSP server list and LspAttach keymaps
 - `lazy-lock.json` — plugin lockfile (commit after plugin changes)
-- `Makefile` — LSP server installation helpers (`make lsp`, `make check-deps`)
-- `bak_lua/` — backup/legacy files, do not edit
+- `Makefile` — new-machine setup for macOS/Linux: `make` installs mise, tools, LSP servers, plugins and parsers (idempotent)
 
 ## Load order (init.lua)
 
-Options → Plugins → Autocmds → Keymaps → Commands → LSP → Colors.
-New modules must be `require()`d in `init.lua` to take effect.
+Options → lazy.nvim (`config.lazy`) → Keymaps → LSP.
+Options come first so the leader key is set before plugins register keymaps.
+New modules outside `lua/plugins/` must be `require()`d in `init.lua` to take effect.
+The colorscheme is applied in the tokyonight spec's `config` in `lua/plugins/ui.lua`.
 
 ## Keybindings
 
@@ -36,28 +37,28 @@ When adding keymaps:
 ## LSP
 
 - gopls: managed by go.nvim plugin in `lua/plugins/lang.lua`
-- buf_ls (protobuf): configured in `lua/lsp/init.lua` using `vim.lsp.config` + `vim.lsp.enable`
-- Other servers: install via `make lsp` (gopls, pyright, bufls, lua-language-server, ruby-lsp)
+- buf_ls, lua_ls, ruby_lsp, yamlls: listed in the `servers` table in `lua/lsp/init.lua`, each enabled only if its binary is on PATH
+- Install servers via `make lsp` (gopls, buf via mise, lua-language-server, ruby-lsp, yaml-language-server)
 
 ## Go development
 
 - go.nvim handles gopls setup, goimports on save, and Go tooling
-- Treesitter ensured languages: go, lua, markdown, proto
+- Treesitter languages: single list in the nvim-treesitter spec in `lua/plugins/lang.lua` (installs parsers and starts highlighting)
 
 ## Plugin conventions
 
 - Prefer folke plugins (snacks.nvim, which-key.nvim, trouble.nvim, lazy.nvim) before considering alternatives from other authors
 - All plugins defined as lazy.nvim spec tables returned from modules
-- To add plugins: create or extend a file in `lua/plugins/`, add its module name to the `modules` list in `lua/plugins/init.lua`
+- To add plugins: create or extend a file in `lua/plugins/`. `lua/config/lazy.lua` uses `{ import = "plugins" }`, so every file there is loaded automatically
 - `lazy-lock.json` tracks pinned commits — run `:Lazy update` then commit the lockfile
 
 ## Snacks.nvim
 
-Primary UI framework. Key pickers: `<leader>ff` (files), `<leader>fg` (grep), `<leader>ft` (explorer), `<leader>gs` (git status). Explorer replaces netrw. Explorer keybindings: `a` (add file/dir), `d` (delete), `r` (rename), `m` (move), `c` (copy), `<Tab>` (select multiple).
+Primary UI framework. Key pickers: `<leader>ff` (files), `<leader>fg` (grep), `<leader>ft` (explorer), `<leader>gs` (git status). Explorer replaces netrw. Files picker and explorer show hidden + gitignored files but exclude `vendor`/`node_modules` (shared `file_filter` in `lua/plugins/snacks.lua`). Press `?` inside any picker for its keymap.
 
 ## which-key.nvim
 
-Keybinding discovery popup — press `<leader>` and wait to see all mappings. `<leader>?` shows buffer-local keymaps. Vim builtin help for `d`, `y`, `g`, `z`, `<c-w>` also available.
+Keybinding discovery popup — press `<leader>` and wait to see all mappings. `<leader>?` shows buffer-local keymaps. Default config only; picker key help comes from Snacks' own `?`.
 
 ## Custom commands
 
@@ -65,4 +66,4 @@ Keybinding discovery popup — press `<leader>` and wait to see all mappings. `<
 
 ## README.md
 
-Outdated — describes a monolithic init.lua that no longer exists. Do not trust for structure info.
+User-facing docs (requirements, LSP setup, keymaps). Keep it in sync when changing structure, LSP servers, or common keymaps.

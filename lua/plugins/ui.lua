@@ -12,28 +12,21 @@ return {
                 hl.SnacksPickerBoxTitle = { fg = c.blue1, bg = c.bg_float }
             end,
         },
+        config = function(_, opts)
+            require("tokyonight").setup(opts)
+            vim.cmd.colorscheme("tokyonight-night")
+        end,
     },
 
     {
         "nvim-lualine/lualine.nvim",
-        dependencies = {
-            "nvim-tree/nvim-web-devicons",
-            "f-person/git-blame.nvim",
-        },
+        dependencies = { "nvim-tree/nvim-web-devicons" },
         config = function()
+            -- Runs on every statusline redraw, so avoid shelling out to git.
             local function get_repo_name()
-                local handle = io.popen("git rev-parse --show-toplevel 2>/dev/null")
-                if handle then
-                    local result = handle:read("*a")
-                    handle:close()
-                    if result and result ~= "" then
-                        return vim.fn.fnamemodify(result:gsub("\n", ""), ":t")
-                    end
-                end
-                return ""
+                local root = vim.fs.root(0, ".git")
+                return root and vim.fs.basename(root) or ""
             end
-
-            local git_blame_available, git_blame = pcall(require, "gitblame")
 
             local function modified_color()
                 if vim.bo.modified then
@@ -63,12 +56,7 @@ return {
                         "diff",
                         "diagnostics",
                     },
-                    lualine_c = git_blame_available and {
-                        {
-                            git_blame.get_current_blame_text,
-                            cond = git_blame.is_blame_text_available,
-                        },
-                    } or {},
+                    lualine_c = {},
                     lualine_x = {
                         "encoding",
                         "filetype",

@@ -2,21 +2,28 @@ local function buf_map(bufnr, mode, lhs, rhs, desc)
     vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, desc = desc })
 end
 
--- Configure diagnostics display (underline + virtual text)
-vim.diagnostic.config({
-    virtual_text = true,
-    underline = true,
-    signs = true,
-    update_in_insert = false,
-})
+-- Virtual text is off by default since 0.11; underline/signs are already on.
+vim.diagnostic.config({ virtual_text = true })
 
--- Configure buf_ls for protobuf
-vim.lsp.config("buf_ls", {
-    cmd = { "buf", "lsp", "serve" },
-    filetypes = { "proto" },
-    root_markers = { "buf.yaml", "buf.work.yaml", ".git" },
-})
-vim.lsp.enable("buf_ls")
+-- Servers use nvim-lspconfig's defaults as-is. Each is only enabled if its
+-- binary is on PATH (install with `make lsp`), so a missing server degrades
+-- quietly instead of erroring when a matching file opens.
+--   buf_ls   protobuf: `buf lsp serve` (mise); formatting + lint from buf.yaml
+--   lua_ls   Lua; lazydev.nvim (lua/plugins/lang.lua) adds Neovim API types
+--   ruby_lsp Ruby (gem in the mise-managed ruby)
+--   yamlls   YAML (npm); document symbols power <leader>o for YAML keys
+-- gopls is not listed here: go.nvim (lua/plugins/lang.lua) manages it.
+local servers = {
+    buf_ls = "buf",
+    lua_ls = "lua-language-server",
+    ruby_lsp = "ruby-lsp",
+    yamlls = "yaml-language-server",
+}
+for server, bin in pairs(servers) do
+    if vim.fn.executable(bin) == 1 then
+        vim.lsp.enable(server)
+    end
+end
 
 -- Format on save for proto files
 vim.api.nvim_create_autocmd("BufWritePre", {
@@ -29,16 +36,16 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 vim.api.nvim_create_autocmd("LspAttach", {
     callback = function(ev)
         local bufnr = ev.buf
-        local client = vim.lsp.get_client_by_id(ev.data.client_id)
-        if not client then
-            return
-        end
-
         buf_map(bufnr, "n", "gd", vim.lsp.buf.definition, "Go to definition")
         buf_map(bufnr, "n", "gD", vim.lsp.buf.declaration, "Go to declaration")
         buf_map(bufnr, "n", "gI", vim.lsp.buf.implementation, "Go to implementation")
-        buf_map(bufnr, "n", "gr", vim.lsp.buf.references, "References")
+        -- nowait: fire immediately instead of waiting to see if this is one of
+        -- Neovim's built-in gr* maps (grn, gra, grr, ...).
+        vim.keymap.set("n", "gr", function()
+            Snacks.picker.lsp_references()
+        end, { buffer = bufnr, nowait = true, desc = "References" })
         buf_map(bufnr, "n", "K", vim.lsp.buf.hover, "Hover")
+        buf_map(bufnr, "n", "<leader>k", vim.lsp.buf.signature_help, "Signature help")
         buf_map(bufnr, "n", "<leader>rn", vim.lsp.buf.rename, "Rename symbol")
         buf_map(bufnr, "n", "<leader>ca", vim.lsp.buf.code_action, "Code action")
     end,
