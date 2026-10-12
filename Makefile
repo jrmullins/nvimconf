@@ -4,8 +4,9 @@
 # Set up a fresh macOS or Linux machine: `make`. Safe to re-run; tools already
 # on PATH (e.g. from Homebrew) are left alone, everything else comes from mise.
 
-# mise's shims let freshly installed tools run without shell activation, and
-# go.nvim installs its Go binaries into ~/go/bin.
+# Keep the launching shell's PATH so we can print setup hints below. The PATH
+# exported to recipes also includes mise shims and go.nvim's Go binaries.
+SHELL_PATH := $(PATH)
 export PATH := $(HOME)/.local/bin:$(HOME)/.local/share/mise/shims:$(HOME)/go/bin:$(PATH)
 
 # Install $(2) with mise unless command $(1) is already on PATH.
@@ -64,6 +65,10 @@ lsp: lsp-go lsp-proto lsp-lua lsp-ruby lsp-yaml
 
 # go.nvim also installs gopls (and goimports etc.) when the plugin is built.
 lsp-go:
+	@case ":$(SHELL_PATH):" in \
+		*":$(HOME)/go/bin:"*) ;; \
+		*) echo '👉 Add `export PATH="$$HOME/go/bin:$$PATH"` to ~/.zshrc so Neovim can find gopls.' ;; \
+	esac
 	@if command -v gopls >/dev/null 2>&1; then \
 		echo "✅ gopls ($$(command -v gopls))"; \
 	else \

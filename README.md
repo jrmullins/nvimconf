@@ -45,11 +45,17 @@ Per-project `mise.toml` files override this, so a project can pin its own versio
 without disturbing the global setup. This repo has its own `mise.toml` with the same
 three tools.
 
-mise is activated from `.zshrc`:
+Add both Go's installed binaries and mise activation to `.zshrc`:
 
 ```sh
+export PATH="$HOME/go/bin:$PATH"
 eval "$(~/.local/bin/mise activate zsh)"
 ```
+
+`go install` (including `gopls`) places binaries in `~/go/bin` by default. The
+Makefile adds that directory only to its own commands; Neovim needs it on the
+interactive shell's PATH too. Without it, go.nvim may try to install `gopls`
+again each time Neovim starts.
 
 ### LSP servers
 
