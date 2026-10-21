@@ -54,7 +54,7 @@ When adding keymaps:
 
 ## Snacks.nvim
 
-Primary UI framework. Key pickers: `<leader>ff` (files), `<leader>fg` (grep), `<leader>ft` (explorer), `<leader>gs` (git status). Explorer replaces netrw. Files picker and explorer show hidden + gitignored files but exclude `vendor`/`node_modules` (shared `file_filter` in `lua/plugins/snacks.lua`). Press `?` inside any picker for its keymap.
+Primary UI framework. Key pickers: `<leader>ff` (files), `<leader>fg` (grep), `<leader>fs` (Go symbols; starts gopls if none is running), `<leader>ft` (explorer), `<leader>gs` (git status). Explorer replaces netrw. Files picker and explorer show hidden + gitignored files but exclude `vendor`/`node_modules` (shared `file_filter` in `lua/plugins/snacks.lua`). Press `?` inside any picker for its keymap.
 
 ## which-key.nvim
 

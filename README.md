@@ -171,7 +171,7 @@ Common ones:
 
 | Key | Action |
 | --- | --- |
-| `<leader>ff` / `fg` / `ft` | files / grep / explorer |
+| `<leader>ff` / `fg` / `fs` / `ft` | files / grep / Go symbols (starts gopls if needed) / explorer |
 | `<leader>gs` | git status (changed files) |
 | `]h` / `[h` | next / previous git hunk |
 | `<leader>gp` / `gb` / `gu` | preview hunk / blame line / undo hunk |
