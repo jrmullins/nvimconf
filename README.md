@@ -22,8 +22,10 @@ make
 2. installs [mise](https://mise.jdx.dev) if it is missing;
 3. installs Neovim 0.12+, Go, Node, Ruby, ripgrep and the tree-sitter CLI via
    `mise use -g`, **skipping anything already on `PATH`** (e.g. from Homebrew);
-4. installs the LSP servers (see below);
-5. installs plugins at their `lazy-lock.json` commits, runs their build steps, and
+4. installs mermaid-cli and ImageMagick via Homebrew or pacman, for diagrams and
+   images (see below);
+5. installs the LSP servers (see below);
+6. installs plugins at their `lazy-lock.json` commits, runs their build steps, and
    installs the treesitter parsers.
 
 Afterwards, activate mise in your shell if you haven't already (see below).
@@ -87,6 +89,28 @@ missing one degrades quietly instead of erroring.
 
 Protobuf uses the Buf CLI, the same tool used for `buf generate` / `buf lint` in gRPC
 repos. It reads the project's `buf.yaml`, so lint rules and formatting match CI.
+
+## Images and Mermaid
+
+[snacks.image](https://github.com/folke/snacks.nvim/blob/main/docs/image.md) shows
+image files, and images and ```` ```mermaid ```` blocks in markdown. It needs:
+
+- a terminal with the Kitty graphics protocol: kitty, Ghostty or WezTerm. WezTerm
+  can't draw images inline, so they open in a float when the cursor is on them;
+- `mmdc` ([mermaid-cli](https://github.com/mermaid-js/mermaid-cli)) for Mermaid;
+- ImageMagick (`magick`) for every image, Mermaid output included.
+
+`make diagrams` installs both with `brew` on macOS or `pacman` on Arch (both are in
+`extra`), skipping any already on `PATH`. Elsewhere it prints a reminder. Homebrew's
+`mmdc` also needs a headless Chrome, which `make diagrams` fetches into
+`~/.cache/puppeteer` using mermaid-cli's bundled puppeteer. They don't
+come from mise: its npm install of mermaid-cli fails a supply-chain trust check, and
+it can only build ImageMagick from source.
+
+The float opens when the cursor is on an image or diagram and closes when it moves
+off. `<leader>si` turns this off (or back on) for the current buffer.
+
+Run `:checkhealth snacks` if nothing renders.
 
 ## Layout
 
@@ -155,6 +179,7 @@ Common ones:
 | `gr` | LSP references (Snacks picker) |
 | `gd` / `K` | definition / hover |
 | `<leader>n` | new file |
+| `<leader>si` | toggle image / Mermaid previews |
 | `<leader>?` | buffer-local keymaps |
 
 Press `<leader>` and wait for which-key to list the rest.
@@ -179,6 +204,7 @@ always excluded (see the top of `lua/plugins/snacks.lua`).
 gitsigns highlights added and changed lines across the full width (toggle with `<leader>gh`)
 and draws bars in the sign column for added, changed and deleted
 lines. The Snacks explorer marks changed files, and `<leader>gs` lists them.
+The cursor line shows inline blame (`author MM/DD/YYYY`); toggle it with `<leader>gB`.
 
 ## Dependencies
 

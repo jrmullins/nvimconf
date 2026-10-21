@@ -45,8 +45,24 @@ vim.api.nvim_create_autocmd("LspAttach", {
             Snacks.picker.lsp_references()
         end, { buffer = bufnr, nowait = true, desc = "References" })
         buf_map(bufnr, "n", "K", vim.lsp.buf.hover, "Hover")
+        -- Press twice to jump into the popup (to scroll); q closes it there.
+        buf_map(bufnr, "n", "<leader>t", vim.lsp.buf.hover, "Type / docs (hover)")
         buf_map(bufnr, "n", "<leader>k", vim.lsp.buf.signature_help, "Signature help")
         buf_map(bufnr, "n", "<leader>rn", vim.lsp.buf.rename, "Rename symbol")
         buf_map(bufnr, "n", "<leader>ca", vim.lsp.buf.code_action, "Code action")
+
+        -- Auto-hover: show type/docs after the cursor idles for 'updatetime'.
+        -- silent: skip the "No information available" message on keywords etc.
+        -- focus = false: never jump into an already-open popup, which is what
+        -- a repeated hover call does by default.
+        -- Per-buffer group, cleared on each attach, so a second client on the
+        -- same buffer doesn't add a duplicate autocmd.
+        vim.api.nvim_create_autocmd("CursorHold", {
+            group = vim.api.nvim_create_augroup("lsp_auto_hover_" .. bufnr, { clear = true }),
+            buffer = bufnr,
+            callback = function()
+                vim.lsp.buf.hover({ silent = true, focus = false })
+            end,
+        })
     end,
 })

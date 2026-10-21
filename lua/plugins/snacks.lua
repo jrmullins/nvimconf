@@ -36,6 +36,10 @@ return {
             dim = { enabled = true },
             explorer = { enabled = true, replace_netrw = true },
             gh = { enabled = true },
+            -- Images and ```mermaid blocks in markdown. Needs `mmdc` and `magick`
+            -- (`make diagrams`). WezTerm can't render inline, so they show in a
+            -- float when the cursor is on them. Debug with :checkhealth snacks.
+            image = { enabled = true },
             git = { enabled = true },
             input = { enabled = true },
             notifier = { enabled = true },
@@ -83,6 +87,24 @@ return {
             { "<leader>z", function() Snacks.zen() end, desc = "Toggle Zen Mode (Snacks)" },
             { "<leader>Z", function() Snacks.zen.zoom() end, desc = "Toggle Zoom (Snacks)" },
             { "<leader>sd", function() Snacks.dim() end, desc = "Toggle dim (Snacks)" },
+            {
+                "<leader>si",
+                function()
+                    -- snacks.image has no off switch, so drop (or re-attach) the
+                    -- buffer's CursorMoved autocmd that opens the image float.
+                    local buf = vim.api.nvim_get_current_buf()
+                    if vim.b[buf].snacks_image_attached then
+                        pcall(vim.api.nvim_del_augroup_by_name, "snacks.image.doc." .. buf)
+                        Snacks.image.doc.hover_close()
+                        vim.b[buf].snacks_image_attached = false
+                        Snacks.notify("Image previews off")
+                    else
+                        Snacks.image.doc.attach(buf)
+                        Snacks.notify("Image previews on")
+                    end
+                end,
+                desc = "Toggle image previews (Snacks)",
+            },
         },
     },
 }

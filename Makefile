@@ -1,4 +1,4 @@
-.PHONY: install system-deps mise tools lsp lsp-go lsp-proto lsp-lua lsp-ruby lsp-yaml plugins help
+.PHONY: install system-deps mise tools diagrams lsp lsp-go lsp-proto lsp-lua lsp-ruby lsp-yaml plugins help
 .DEFAULT_GOAL := install
 
 # Set up a fresh macOS or Linux machine: `make`. Safe to re-run; tools already
@@ -24,10 +24,11 @@ help:
 	@echo "  system-deps - Check git, curl, tar, make and a C compiler (can't be installed portably)"
 	@echo "  mise        - Install mise if missing"
 	@echo "  tools       - Neovim, Go, Node, Ruby, ripgrep, tree-sitter CLI (skipped if on PATH)"
+	@echo "  diagrams    - mermaid-cli and ImageMagick via brew or pacman (snacks.image)"
 	@echo "  lsp         - All LSP servers (lsp-go, lsp-proto, lsp-lua, lsp-ruby, lsp-yaml)"
 	@echo "  plugins     - Install plugins at lazy-lock.json versions, plus treesitter parsers"
 
-install: system-deps mise tools lsp plugins
+install: system-deps mise tools diagrams lsp plugins
 	@echo "✅ Done."
 	@command -v mise >/dev/null 2>&1 && mise doctor >/dev/null 2>&1 || \
 		echo '👉 Add mise to your shell, e.g. in ~/.zshrc: eval "$$(~/.local/bin/mise activate zsh)"'
@@ -59,6 +60,30 @@ tools: mise
 	$(call ensure,ruby,ruby)
 	$(call ensure,rg,ripgrep)
 	$(call ensure,tree-sitter,tree-sitter)
+
+# snacks.image renders ```mermaid blocks with mmdc and runs every image through
+# ImageMagick. Both come from the system package manager: mise's npm install of
+# mermaid-cli trips its supply-chain trust check, and mise can only build
+# ImageMagick from source. Arch has both in the official repos.
+diagrams:
+	@for t in mmdc:mermaid-cli magick:imagemagick; do \
+		cmd=$${t%%:*}; pkg=$${t#*:}; \
+		if command -v $$cmd >/dev/null 2>&1; then \
+			echo "✅ $$cmd ($$(command -v $$cmd))"; \
+		elif command -v brew >/dev/null 2>&1; then \
+			echo "📦 Installing $$pkg via brew..." && brew install $$pkg; \
+		elif command -v pacman >/dev/null 2>&1; then \
+			echo "📦 Installing $$pkg via pacman..." && sudo pacman -S --needed $$pkg; \
+		else \
+			echo "⚠️  $$cmd missing; install $$pkg with your package manager"; \
+		fi; \
+	done
+	@# Homebrew's mmdc needs a headless Chrome it doesn't install. Its bundled
+	@# puppeteer fetches the matching version into ~/.cache/puppeteer (no-op if present).
+	@if command -v brew >/dev/null 2>&1 && brew list mermaid-cli >/dev/null 2>&1; then \
+		"$$(brew --prefix mermaid-cli)/libexec/lib/node_modules/@mermaid-js/mermaid-cli/node_modules/.bin/puppeteer" \
+			browsers install chrome-headless-shell >/dev/null && echo "✅ chrome-headless-shell (for mmdc)"; \
+	fi
 
 lsp: lsp-go lsp-proto lsp-lua lsp-ruby lsp-yaml
 	@echo "✅ All LSP servers installed"
