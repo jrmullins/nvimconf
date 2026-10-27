@@ -10,6 +10,7 @@ return {
             current_line_blame_formatter = "<author> <author_time:%m/%d/%Y>",
         },
         keys = {
+            { "<leader>gd", "<cmd>Gitsigns diff<cr>", desc = "Git diff review" },
             { "]h", "<cmd>Gitsigns nav_hunk next<cr>", desc = "Next git hunk" },
             { "[h", "<cmd>Gitsigns nav_hunk prev<cr>", desc = "Previous git hunk" },
             { "<leader>gp", "<cmd>Gitsigns preview_hunk_inline<cr>", desc = "Git preview hunk" },
