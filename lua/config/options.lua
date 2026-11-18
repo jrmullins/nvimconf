@@ -12,3 +12,5 @@ opt.smartindent = true
 opt.clipboard = "unnamedplus"
 -- ms of idle before CursorHold fires (default 4000); drives the LSP auto-hover
 opt.updatetime = 5000
+-- Diagonal hatching for deleted-line filler in diff mode (diffview, :diffthis)
+opt.fillchars:append({ diff = "╱" })

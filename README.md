@@ -173,10 +173,12 @@ Common ones:
 | --- | --- |
 | `<leader>ff` / `fg` / `fs` / `ft` | files / grep / Go symbols (starts gopls if needed) / explorer |
 | `<leader>gs` | git status (changed files) |
-| `<leader>gd` | side-by-side git diff review (loads gitsigns if needed) |
+| `<leader>GS` | side-by-side git diff review (loads gitsigns if needed) |
+| `<leader>dv` | toggle diffview (repo-wide diff review tab) |
 | `]h` / `[h` | next / previous git hunk |
 | `<leader>gp` / `gb` / `gu` | preview hunk / blame line / undo hunk |
 | `<leader>o` | document symbols |
+| `gd` / `<leader>gd` | go to definition (LSP) |
 | `gr` | LSP references (Snacks picker) |
 | `gd` / `K` | definition / hover |
 | `<leader>n` | new file |
@@ -206,11 +208,15 @@ always excluded (see the top of `lua/plugins/snacks.lua`).
 gitsigns highlights added and changed lines across the full width (toggle with `<leader>gh`)
 and draws bars in the sign column for added, changed and deleted
 lines. The Snacks explorer marks changed files, and `<leader>gs` lists them.
-`<leader>gd` opens a review tab with a changed-file tree and vertical before/after
+`<leader>GS` opens a review tab with a changed-file tree and vertical before/after
 diffs, even when no file was open at startup. Use `]f` / `[f` to change files and
 `]c` / `[c` to change hunks. The working-tree side is editable; revision buffers
 are read-only. The cursor line shows inline blame (`author MM/DD/YYYY`); toggle
 it with `<leader>gB`.
+
+[diffview.nvim](https://github.com/sindrets/diffview.nvim): `<leader>dv` toggles a review
+tab (file panel + side-by-side diffs). In it: `<Tab>` / `<S-Tab>` next / previous file,
+`-` stage / unstage file, `g?` help. `:DiffviewFileHistory %` shows the current file's history.
 
 ## Dependencies
 

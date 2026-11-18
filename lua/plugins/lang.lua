@@ -52,12 +52,30 @@ return {
             return {
                 lsp_cfg = {
                     capabilities = capabilities,
+                    -- ST1000 (package comment form) is off: most packages
+                    -- don't need one, and copyright headers trip it.
+                    settings = { gopls = { analyses = { ST1000 = false } } },
                 },
                 lsp_keymaps = false,
             }
         end,
         config = function(_, opts)
             require("go").setup(opts)
+            -- Don't attach gopls to non-file buffers (e.g. diffview:// revisions):
+            -- gopls rejects non-file URIs with "JSON RPC parse error".
+            local default_root = vim.lsp.config.gopls.root_dir
+            vim.lsp.config("gopls", {
+                root_dir = function(bufnr, on_dir)
+                    if vim.api.nvim_buf_get_name(bufnr):match("^%a[%w+.-]*://") then
+                        return
+                    end
+                    if type(default_root) == "function" then
+                        default_root(bufnr, on_dir)
+                    else
+                        on_dir(vim.fs.root(bufnr, { "go.work", "go.mod", ".git" }))
+                    end
+                end,
+            })
             local format_sync_grp = vim.api.nvim_create_augroup("GoFormat", { clear = true })
             vim.api.nvim_create_autocmd("BufWritePre", {
                 pattern = "*.go",

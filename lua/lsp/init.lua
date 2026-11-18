@@ -37,6 +37,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
     callback = function(ev)
         local bufnr = ev.buf
         buf_map(bufnr, "n", "gd", vim.lsp.buf.definition, "Go to definition")
+        buf_map(bufnr, "n", "<leader>gd", vim.lsp.buf.definition, "Go to definition")
         buf_map(bufnr, "n", "gD", vim.lsp.buf.declaration, "Go to declaration")
         buf_map(bufnr, "n", "gI", vim.lsp.buf.implementation, "Go to implementation")
         -- nowait: fire immediately instead of waiting to see if this is one of
